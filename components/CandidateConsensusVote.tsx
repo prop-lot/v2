@@ -1,9 +1,18 @@
-const CandidateConsensusVote = ({ votes }: { votes: any }) => {
+import { useAccount } from "wagmi";
+
+//  isFeedbackClosed={isUpdateToProposal && !isParentProposalUpdatable}
+const CandidateConsensusVote = ({
+  votes,
+  isOpenToFeedback,
+}: {
+  votes: any;
+  isOpenToFeedback: boolean;
+}) => {
   const totalVotes =
     votes.for.length + votes.against.length + votes.abstain.length;
-  const forPercentage = (votes.for.length / totalVotes) * 100;
-  const againstPercentage = (votes.against.length / totalVotes) * 100;
-  const abstainPercentage = (votes.abstain.length / totalVotes) * 100;
+  const forPercentage = (votes.for.length / totalVotes) * 100 || 0;
+  const againstPercentage = (votes.against.length / totalVotes) * 100 || 0;
+  const abstainPercentage = (votes.abstain.length / totalVotes) * 100 || 0;
 
   return (
     <div className="p-[16px] border rounded">

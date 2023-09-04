@@ -1,5 +1,10 @@
 import { Row, Container, Col } from "react-bootstrap";
 import { GetServerSidePropsContext } from "next";
+import { useLazyQuery } from "@apollo/client";
+import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
+import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
+import { useAccount, useEnsName } from "wagmi";
+
 import CandidateProposalProgress from "../../components/CandidateProposalProgress";
 import CandidateConsensusVote from "../../components/CandidateConsensusVote";
 import CandidateSponsors from "../../components/CandidateSponsors";
@@ -73,6 +78,8 @@ const CandidateIndexPage = ({
   votes: any;
 }) => {
   console.log(proposalCandidate);
+  const { address } = useAccount();
+
   const [_title, ...description] =
     proposalCandidate.latestVersion.content.description.split("\n\n");
 
@@ -99,6 +106,15 @@ const CandidateIndexPage = ({
       </div>
     ));
   };
+
+  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
+    DELEGATED_VOTES_BY_OWNER_SUB,
+    {
+      context: {
+        clientName: "nouns" as SUPPORTED_SUBDOMAINS,
+      },
+    }
+  );
 
   return (
     <>
@@ -127,7 +143,11 @@ const CandidateIndexPage = ({
               </section>
               <section className="col-span-1 flex flex-col space-y-4">
                 <CandidateProposalProgress candidate={proposalCandidate} />
-                <CandidateConsensusVote votes={votes} />
+                <CandidateConsensusVote
+                  votes={votes}
+                  isOpenToFeedback={true}
+                  // isOpenToFeedback={proposalCandidate.proposalIdToUpdate && originalProposal?.status !== ProposalState.UPDATABLE ? false : true;}
+                />
                 <CandidateSponsors candidate={proposalCandidate} />
               </section>
             </main>
