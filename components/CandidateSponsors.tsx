@@ -14,7 +14,7 @@ const PfpOrFallback = ({ src, alt }: { src?: string; alt?: string }) => {
   }
 };
 
-const CandidateSponsors = () => {
+const CandidateSponsors = ({ candidate }: { candidate: any }) => {
   return (
     <div className="p-[16px] border rounded">
       <div className="isolate flex -space-x-2 overflow-hidden mx-[auto] mb-[16px] w-fit">

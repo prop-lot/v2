@@ -1,4 +1,4 @@
-const CandidateProposalProgress = () => {
+const CandidateProposalProgress = ({ candidate }: { candidate: any }) => {
   return (
     <div className="p-[16px] border rounded">
       <h3 className="font-bold mb-[16px]">Proposal progress</h3>
