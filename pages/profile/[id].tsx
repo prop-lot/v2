@@ -39,14 +39,14 @@ const ProfileCard = (props: {
   isLoading?: boolean;
 }) => {
   return (
-    <div className="font-propLot whitespace-nowrap py-[8px] px-[16px] gap-[4px] sm:p-[16px] sm:gap-[8px] bg-white border-solid border border-[#e2e3e8] rounded-[16px] box-border flex flex-1 flex-col justify-start">
+    <div className="font-inter whitespace-nowrap py-[8px] px-[16px] gap-[4px] sm:p-[16px] sm:gap-[8px] bg-white border-solid border border-[#e2e3e8] rounded-[16px] box-border flex flex-1 flex-col justify-start">
       {props.isLoading ? (
         <div className="flex flex-1 justify-center mt-[18px]">
           <Spinner animation="border" />
         </div>
       ) : (
         <>
-          <span className="font-semibold text-[12px] text-[#8C8D92]">
+          <span className="font-semibold text-[12px] text-dark-grey">
             {props.title}
           </span>
           <span className="font-extrabold text-[24px] text-[#212529]">
@@ -118,7 +118,7 @@ const ProfileLilNounDisplay = ({
                 styleOverride="!w-[48px] !h-[48px]"
                 renderOverlay={() => {
                   return (
-                    <span className="flex flex-1 mb-[-48px] text-[12px] h-full font-propLot font-semibold z-10 !text-[#212529] items-center justify-center">{`+${
+                    <span className="flex flex-1 mb-[-48px] text-[12px] h-full font-inter font-semibold z-10 !text-[#212529] items-center justify-center">{`+${
                       lilNounData.length - 5
                     }`}</span>
                   );
@@ -129,7 +129,7 @@ const ProfileLilNounDisplay = ({
           </div>
         ) : null // <Davatar size={32} address={id} provider={provider} />
       }
-      <div className="flex flex-1 text-[12px] text-[#8C8D92] font-semibold whitespace-pre justify-center">
+      <div className="flex flex-1 text-[12px] text-dark-grey font-semibold whitespace-pre justify-center">
         Tokens owned:<span className="text-[#212529]"> {tokensInWallet}</span>
         {` delegated:`}
         <span className="text-[#212529]">{` ${
@@ -291,7 +291,7 @@ const PropLotUserProfile = ({
         <Col lg={10} className="ml-auto mr-auto">
           <Row>
             <div>
-              <span className="text-[#8C8D92] flex flex-row items-center justify-center sm:justify-start">
+              <span className="text-dark-grey flex flex-row items-center justify-center sm:justify-start">
                 <span className="text-[24px] font-londrina">Profile</span>
               </span>
             </div>
@@ -309,7 +309,7 @@ const PropLotUserProfile = ({
               </div>
             </div>
           </Row>
-          <div className="font-propLot">
+          <div className="font-inter">
             <div className="grid gap-[16px] grid-cols-2 sm:!grid-cols-3 md:!grid-cols-4">
               {data?.propLotProfile?.profile.user.userStats &&
                 buildProfileCards(data?.propLotProfile?.profile.user.userStats)}
@@ -333,7 +333,7 @@ const PropLotUserProfile = ({
                           className={`!border-box !flex !flex-row justify-center items-center !py-[8px] !px-[12px] !bg-white !border !rounded-[100px] ${
                             listButtonActive === list
                               ? '!text-[#212529] !border-[#2B83F6] !border-[2px]'
-                              : '!text-[#8C8D92] !border-[#E2E3E8] !border-[1px]'
+                              : '!text-dark-grey !border-[#E2E3E8] !border-[1px]'
                           } !text-[16px] !font-semibold`}
                           id={list}
                           onClick={e => setListButtonActive(list)}
@@ -371,7 +371,7 @@ const PropLotUserProfile = ({
                           className={`!border-box !flex !flex-row justify-center items-center !py-[8px] !px-[12px] !bg-white !border !rounded-[100px] ${
                             listButtonActive === list
                               ? '!text-[#212529] !border-[#2B83F6] !border-[2px]'
-                              : '!text-[#8C8D92] !border-[#E2E3E8] !border-[1px]'
+                              : '!text-dark-grey !border-[#E2E3E8] !border-[1px]'
                           } !text-[16px] !font-semibold`}
                           id={list}
                           onClick={e => setListButtonActive(list)}

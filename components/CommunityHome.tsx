@@ -1,17 +1,73 @@
 import Router from "next/router";
-import { useEffect } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 import { useAccount } from "wagmi";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
+import { GET_TAGS } from "@/graphql/queries/tagsQuery";
 import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
-import UIFilter from "@/components/UIFilter";
-import useSyncURLParams from "@/hooks/useSyncURLParams";
 import EmptyState from "@/components/EmptyState";
+import FAQAccordion from "@/components/FAQAccordion";
+import CommunityHomeLiveDataBoard from "@/components/CommunityHomeLiveDataBoard";
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import { getPropLot } from "@/graphql/types/__generated__/getPropLot";
+import Link from "next/link";
+import { virtualTagColorMap } from "@/utils/virtualTagColors";
+import { getTags, getTags_tags } from "@/graphql/types/__generated__/getTags";
+
+const PROPLOT_HOME_FILTER = "PROPLOT_HOME";
+
+const TagButtons = ({ tags }: { tags: getTags_tags[] }) => (
+  <div className="grid grid-cols-3 gap-lg md:grid-cols-4">
+    {tags.map(({ label, type }) => (
+      <Link
+        key={type}
+        href={`/ideas?tag=${type}`}
+        className="bg-white rounded-xl border p-md gap-sm border-grey justify-start items-center flex flex-col md:flex-row"
+      >
+        {!!virtualTagColorMap[type]?.logo && (
+          <div
+            className={`w-[36px] h-[36px] ${virtualTagColorMap[type].colors} rounded-full flex-col justify-center items-center inline-flex`}
+          >
+            <Image
+              src={virtualTagColorMap[type].logo || ""}
+              alt={`${label} icon`}
+              width="18"
+              height="18"
+            />
+          </div>
+        )}
+
+        <div className="flex-col justify-center items-center md:justify-start md:items-start inline-flex whitespace-nowrap">
+          <div className="text-black text-sm md:text-base font-bold">
+            {label}
+          </div>
+        </div>
+      </Link>
+    ))}
+    <Link
+      href="/ideas"
+      className="bg-white rounded-xl border p-md gap-sm border-grey justify-start items-center flex flex-col md:flex-row"
+    >
+      <div className="flex-col justify-center items-center md:justify-start md:items-start inline-flex whitespace-nowrap">
+        <div className="text-black text-sm md:text-base font-bold">
+          All ideas
+        </div>
+      </div>
+      <div className="w-[36px] h-[36px] rounded-full flex-col justify-center items-center inline-flex">
+        <Image
+          src="/arrow-right.svg"
+          alt="arrow-right icon."
+          width="18"
+          height="18"
+        />
+      </div>
+    </Link>
+  </div>
+);
 
 export default function CommunityHome({
   community,
@@ -19,6 +75,12 @@ export default function CommunityHome({
   community: Community & { data: { name: string; pfpUrl: string } };
 }) {
   const { address } = useAccount();
+
+  const { data: tagsResponse } = useQuery<getTags>(GET_TAGS, {
+    context: {
+      clientName: "PropLot",
+    },
+  });
 
   const [getPropLotQuery, { data, refetch, error }] = useLazyQuery<getPropLot>(
     GET_PROPLOT_QUERY,
@@ -51,169 +113,81 @@ export default function CommunityHome({
     }
   }, [address, getDelegatedVotes]);
 
-  /*
-    Filters that are applied to the current response.
-    These can be parsed to update the local state after each request to ensure the client + API are in sync.
-  */
-  const appliedFilters = data?.propLot?.metadata?.appliedFilters || [];
-  const appliedFilterTags = data?.propLot?.appliedFilterTags || [];
-
-  useSyncURLParams(appliedFilters, data?.propLot?.metadata?.requestUUID);
-
-  /*
-    Parse the query params from the url on page load and send them as filters in the initial
-    PropLot query.
-  */
   useEffect(() => {
-    const urlParams = window.location.search;
-    const currentURLParams = urlParams
-      .substring(1)
-      .split("&")
-      .filter((str) => Boolean(str));
-
     getPropLotQuery({
       variables: {
         options: {
           requestUUID: v4(),
-          filters: currentURLParams,
+          filters: [PROPLOT_HOME_FILTER],
         },
       },
     });
   }, [getPropLotQuery]);
 
   const handleRefresh = () => {
-    refetch({ options: { requestUUID: v4(), filters: appliedFilters } });
+    refetch({ options: { requestUUID: v4(), filters: [PROPLOT_HOME_FILTER] } });
   };
 
-  const handleUpdateFilters = (updatedFilters: string[], filterId: string) => {
-    /*
-      Keep previously applied filters, remove any that match the filterId value.
-      Then add the selection of updatedFilters and remove the __typename property.
-    */
-    const selectedfilters: string[] = [
-      ...appliedFilters.filter((f: string) => {
-        return !f.includes(`${filterId}=`);
-      }),
-      ...updatedFilters,
-    ];
-
-    refetch({ options: { requestUUID: v4(), filters: selectedfilters } });
-  };
-
-  const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
+  const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0;
 
   return (
-    <main className="pt-8 min-h-[calc(100vh-72px)] flex flex-col">
-      <div>
-        <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
-          <div className="mt-8 mb-4 flex flex-col items-center sm:flex-row sm:mt-12">
-            <img src={community.data.pfpUrl} className="w-24 h-24 rounded-lg" />
-            <div className="sm:ml-4 flex flex-col items-center sm:items-start">
-              <h3 className="text-3xl font-bold font-londrina mb-2 mt-[12px] sm:mt-[0px] mr-[auto] ml-[auto] sm:mx-[0px]">
-                {community?.data?.name} Prop Lot
-              </h3>
-              {/* stupid bootstrap css making it impossible to center this text */}
-              <h4 className="max-w-[600px] mr-[auto] ml-[auto] text-center sm:mx-[0px] sm:!text-left text-sm">
-                If you own a {community?.data?.name} token you can submit ideas,
-                requests, or suggestions below, and vote on other submissions.
-              </h4>
-            </div>
-          </div>
-          <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-normal sm:items-center">
-            <div className="flex flex-row space-x-4">
-              {data?.propLot?.sortFilter && (
-                <UIFilter
-                  filter={data.propLot.sortFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-              {data?.propLot?.tagFilter && (
-                <UIFilter
-                  filter={data.propLot.tagFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-              {data?.propLot?.dateFilter && (
-                <UIFilter
-                  filter={data.propLot.dateFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-            </div>
-            <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-start sm:items-center">
-              <button
-                className={`${
-                  nounBalance > 0
-                    ? "!bg-[#2B83F6] !text-white"
-                    : "!bg-[#F4F4F8] !text-[#E2E3E8]"
-                } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] self-center mb-[16px] sm:mb-[0px]`}
-                onClick={() => {
-                  if (nounBalance > 0) {
-                    Router.push("/idea/new");
-                  }
-                }}
-              >
-                New Submission
-              </button>
-            </div>
-          </div>
-        </section>
+    <main className="pt-xl gap-xl min-h-[calc(100vh-72px)] flex flex-col overflow-x-hidden">
+      <div
+        style={{
+          position: "relative",
+          backgroundImage: "url(/background-image.svg)",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        className="flex flex-col justify-center align-center w-full pt-[0%] pb-[0%] md:pt-[7%] md:pb-[7%]"
+      >
+        <div className="flex flex-col justify-center items-center mx-auto align-center h-full w-[55%] max-w-[522px] min-w-[300px]">
+          <h1
+            style={{ textAlign: "center", position: "relative" }}
+            className="text-center font-londrinaLight text-black text-xxl md:text-[69px] lg:text-[89px] font-light"
+          >
+            Find ideas to build for Nouns
+          </h1>
+
+          <p
+            style={{ textAlign: "center", position: "relative" }}
+            className="text-md mt-sm text-slate"
+          >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore Lorem ipsum dolor sit amet,
+            consectetur
+          </p>
+        </div>
       </div>
 
-      <section className="border-t bg-gray-100 pb-8 px-[20px] xl:px-0 grow">
-        {appliedFilterTags?.length > 0 && (
-          <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
-            <div className="flex flex-row items-center gap-[8px] overflow-scroll">
-              {appliedFilterTags.map((filterTag) => {
-                return (
-                  <button
-                    key={filterTag.displayName}
-                    className="text-white bg-black text-sm font-bold rounded-[8px] px-[8px] py-[4px] flex items-center whitespace-nowrap"
-                    onClick={() => {
-                      refetch({
-                        options: {
-                          requestUUID: v4(),
-                          filters: appliedFilters.filter((f) => {
-                            return f !== filterTag.param;
-                          }),
-                        },
-                      });
-                    }}
-                  >
-                    <span className="flex">{filterTag.displayName}</span>
-                    <span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="w-5 h-5 flex pl-[4px] font-bold"
-                      >
-                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-                      </svg>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+      <section className="flex flex-1 flex-col gap-lg max-w-screen-xl mx-auto px-lg w-full">
+        <div className="text-black text-xxl font-londrina text-center">
+          What ideas are you looking for?
+        </div>
+        {tagsResponse && (tagsResponse?.tags || []).length > 0 && (
+          <TagButtons tags={tagsResponse.tags as getTags_tags[]} />
         )}
-        <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
-          {data?.propLot?.ideas?.map((idea: any, idx: number) => {
-            return (
-              <IdeaRow
-                communityName={community.data.name}
-                key={`idea-${idx}`}
-                idea={idea}
-                nounBalance={nounBalance}
-                refetch={() => {
-                  handleRefresh();
-                }}
-              />
-            );
+        <div className="gap-lg flex flex-row flex-wrap items-center w-full overflow-x-scroll scrollbar-hide">
+          {data?.propLot?.list?.map((listItem: any, idx: number) => {
+            if (listItem.__typename === "Idea") {
+              return (
+                <IdeaRow
+                  key={`idea-${idx}`}
+                  idea={listItem}
+                  nounBalance={nounBalance}
+                  refetch={() => {
+                    handleRefresh();
+                  }}
+                />
+              );
+            }
+
+            return null;
           })}
-          {data?.propLot?.ideas?.length === 0 && (
+          {data?.propLot?.list?.length === 0 && (
             <EmptyState
-              appliedFilters={appliedFilters}
+              appliedFilters={[]}
               error={error}
               clearFilters={() => {
                 refetch({ options: { requestUUID: v4(), filters: [] } });
@@ -221,6 +195,22 @@ export default function CommunityHome({
             />
           )}
         </div>
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-center mt-4">
+          <button
+            className="!bg-[#34AC80] !text-[#FFF] !border-none !text-[16px] !rounded-[10px] !font-ptRootUI !font-bold !pt-[8px] !pb-[8px] !pl-[24px] !pr-[24px] self-center"
+            onClick={() => {
+              Router.push("/ideas");
+            }}
+          >
+            Browse all ideas
+          </button>
+        </div>
+      </section>
+
+      <CommunityHomeLiveDataBoard community={community} />
+
+      <section className="!font-ptRootUI flex flex-1 justify-center px-[20px] xl:px-0 py-[72px] gap-8">
+        <FAQAccordion />
       </section>
     </main>
   );

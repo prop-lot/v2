@@ -37,9 +37,9 @@ const CustomToggle = forwardRef(
         e.preventDefault();
         onClick(e);
       }}
-      className="font-propLot flex flex-1 justify-center btn !rounded-[6px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#333]"
+      className="font-inter flex flex-1 justify-center btn !rounded-[12px] bg-white border border-grey p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-black"
     >
-      <span className="flex items-center justify-center text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
+      <span className="flex items-center justify-center text-base normal-case pt-sm pb-sm pl-md pr-md gap-md">
         {children}
       </span>
     </a>
@@ -83,7 +83,7 @@ const UIFilter = ({
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="currentColor"
-          className="w-5 h-5"
+          className="w-[20px] h-[20px]"
         >
           <path
             fillRule="evenodd"
@@ -93,7 +93,7 @@ const UIFilter = ({
         </svg>
       </Dropdown.Toggle>
 
-      <Dropdown.Menu className="!min-w-[220px] !p-[8px] !mt-[8px] !bg-[#F4F4F8] !border !border-[#E2E3E8] !rounded-[10px]">
+      <Dropdown.Menu className="!min-w-[220px] !p-sm !mt-sm !bg-[#F4F4F8] !border !border-grey !rounded-[10px]">
         {filter.options.map((opt) => {
           const isSelected = selectedFilters.some(
             (selectedFilter: any) => selectedFilter === opt.value
@@ -106,8 +106,8 @@ const UIFilter = ({
               }}
               key={opt.id}
               className={`${
-                isSelected ? "bg-white border border-[#E2E3E8]" : ""
-              } min-width-[250px] cursor-pointer active:!bg-white !hover:bg-[#E2E3E8] rounded-[6px] justify-start mb-[2px] mt-[2px] !pt-[8px] !pb-[8px] pl-[16px] pr-[16px]`}
+                isSelected ? "bg-white border border-grey" : ""
+              } min-width-[250px] cursor-pointer active:!bg-white !hover:bg-[#E2E3E8] rounded-[6px] justify-start mb-xs mt-xs !pt-sm !pb-sm pl-md pr-md`}
             >
               <div className="flex items-center">
                 {filter.type === FilterTyeEnum.MULTI_SELECT && (
@@ -124,16 +124,16 @@ const UIFilter = ({
                       onChange={() => {}}
                       className={`${
                         isSelected
-                          ? "checked:!bg-[#231F20] checked:!border-[#E2E3E8] border-[#231F20]"
-                          : "border-[#8C8D92]"
-                      } border-solid border-2 mr-2`}
+                          ? "checked:!bg-black checked:!border-grey border-black"
+                          : "border-dark-grey"
+                      } border-solid border-2 mr-sm`}
                     />
                   </Form.Check>
                 )}
                 <span className="flex flex-1 items-center justify-between">
                   <span
                     className={`${
-                      isSelected ? "text-[#231F20]" : "text-[#8C8D92]"
+                      isSelected ? "text-black" : "text-dark-grey"
                     } font-semibold text-[14px]`}
                   >
                     {opt.label}
