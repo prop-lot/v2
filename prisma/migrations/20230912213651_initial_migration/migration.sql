@@ -1,9 +1,13 @@
 -- CreateEnum
 CREATE TYPE "TagType" AS ENUM ('CREATIVE', 'COMMUNITY', 'GOVERNANCE', 'PUBLIC_GOOD', 'SOFTWARE', 'HARDWARE', 'OTHER');
 
+-- CreateEnum
+CREATE TYPE "IdeaExpiryOption" AS ENUM ('SEVEN_DAYS', 'FOURTEEN_DAYS', 'TWENTY_EIGHT_DAYS');
+
 -- CreateTable
 CREATE TABLE "Community" (
     "id" SERIAL NOT NULL,
+    "uuid" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "data" JSONB NOT NULL DEFAULT '{ "pfp": "" }',
@@ -13,8 +17,21 @@ CREATE TABLE "Community" (
 );
 
 -- CreateTable
+CREATE TABLE "Image" (
+    "id" SERIAL NOT NULL,
+    "uuid" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "ideaId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Idea" (
     "id" SERIAL NOT NULL,
+    "uuid" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "title" VARCHAR(50) NOT NULL,
@@ -22,10 +39,11 @@ CREATE TABLE "Idea" (
     "description" VARCHAR(1080) NOT NULL,
     "tokenSupplyOnCreate" INTEGER DEFAULT 0,
     "createdAtBlock" INTEGER NOT NULL DEFAULT 0,
-    "legacyLockedScore" INTEGER NOT NULL DEFAULT 0,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "creatorId" TEXT NOT NULL,
     "communityId" INTEGER NOT NULL,
+    "expiryOption" "IdeaExpiryOption" NOT NULL,
+    "expiryDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Idea_pkey" PRIMARY KEY ("id")
 );
@@ -33,9 +51,9 @@ CREATE TABLE "Idea" (
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
+    "uuid" TEXT NOT NULL,
     "wallet" TEXT NOT NULL,
     "ens" TEXT,
-    "legacyTokenCount" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -43,6 +61,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Vote" (
     "id" SERIAL NOT NULL,
+    "uuid" TEXT NOT NULL,
     "direction" INTEGER NOT NULL,
     "ideaId" INTEGER NOT NULL,
     "voterId" TEXT NOT NULL,
@@ -56,6 +75,7 @@ CREATE TABLE "Vote" (
 -- CreateTable
 CREATE TABLE "Comment" (
     "id" SERIAL NOT NULL,
+    "uuid" TEXT NOT NULL,
     "body" TEXT NOT NULL,
     "ideaId" INTEGER NOT NULL,
     "authorId" TEXT NOT NULL,
@@ -70,6 +90,7 @@ CREATE TABLE "Comment" (
 -- CreateTable
 CREATE TABLE "Tag" (
     "id" SERIAL NOT NULL,
+    "uuid" TEXT NOT NULL,
     "type" "TagType" NOT NULL,
     "label" TEXT NOT NULL,
 
@@ -83,13 +104,61 @@ CREATE TABLE "_IdeaToTag" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Community_uuid_key" ON "Community"("uuid");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Community_uname_key" ON "Community"("uname");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Image_uuid_key" ON "Image"("uuid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Idea_uuid_key" ON "Idea"("uuid");
+
+-- CreateIndex
+CREATE INDEX "Idea_creatorId_idx" ON "Idea"("creatorId");
+
+-- CreateIndex
+CREATE INDEX "Idea_communityId_idx" ON "Idea"("communityId");
+
+-- CreateIndex
+CREATE INDEX "Idea_deleted_idx" ON "Idea"("deleted");
+
+-- CreateIndex
+CREATE INDEX "Idea_createdAt_idx" ON "Idea"("createdAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_uuid_key" ON "User"("uuid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_wallet_key" ON "User"("wallet");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Vote_uuid_key" ON "Vote"("uuid");
+
+-- CreateIndex
+CREATE INDEX "Vote_voterId_idx" ON "Vote"("voterId");
+
+-- CreateIndex
+CREATE INDEX "Vote_ideaId_idx" ON "Vote"("ideaId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Vote_ideaId_voterId_key" ON "Vote"("ideaId", "voterId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Comment_uuid_key" ON "Comment"("uuid");
+
+-- CreateIndex
+CREATE INDEX "Comment_authorId_idx" ON "Comment"("authorId");
+
+-- CreateIndex
+CREATE INDEX "Comment_ideaId_idx" ON "Comment"("ideaId");
+
+-- CreateIndex
+CREATE INDEX "Comment_deleted_idx" ON "Comment"("deleted");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Tag_uuid_key" ON "Tag"("uuid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Tag_type_key" ON "Tag"("type");
@@ -99,6 +168,9 @@ CREATE UNIQUE INDEX "_IdeaToTag_AB_unique" ON "_IdeaToTag"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_IdeaToTag_B_index" ON "_IdeaToTag"("B");
+
+-- AddForeignKey
+ALTER TABLE "Image" ADD CONSTRAINT "Image_ideaId_fkey" FOREIGN KEY ("ideaId") REFERENCES "Idea"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Idea" ADD CONSTRAINT "Idea_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("wallet") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,5 +1,6 @@
 import { PrismaClient, TagType } from "@prisma/client";
 import Chance from "chance";
+import moment from "moment";
 
 const prisma = new PrismaClient();
 const chance = new Chance();
@@ -79,6 +80,8 @@ async function seed() {
         }`,
         tokenSupplyOnCreate: 7 * i,
         createdAtBlock: 16534162,
+        expiryDate: moment(new Date()).add(7, "days").toDate(),
+        expiryOption: "SEVEN_DAYS"
       },
     });
 
