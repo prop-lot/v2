@@ -148,7 +148,12 @@ class IdeasService {
             },
           },
         },
-        ...(isHomePage && { take: 5 }),
+        ...(isHomePage && {
+          take: 5,
+          orderBy: {
+            createdAt: 'desc',
+          }
+        }),
       });
 
       const ideaData = ideas

@@ -33,9 +33,9 @@ const ChevronUp = () => (
     <path
       d="M3.83398 10.0002L8.50065 5.3335L13.1673 10.0002"
       stroke="black"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -51,9 +51,9 @@ const ChevronDown = () => (
     <path
       d="M13.1673 6L8.50065 10.6667L3.83398 6"
       stroke="#6B7280"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
