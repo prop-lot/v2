@@ -12,6 +12,12 @@ export enum FilterType {
   SINGLE_SELECT = "SINGLE_SELECT",
 }
 
+export enum IdeaExpiryOption {
+  FOURTEEN_DAYS = "FOURTEEN_DAYS",
+  SEVEN_DAYS = "SEVEN_DAYS",
+  TWENTY_EIGHT_DAYS = "TWENTY_EIGHT_DAYS",
+}
+
 export enum TagType {
   ARCHIVED = "ARCHIVED",
   CLOSED = "CLOSED",
@@ -50,6 +56,8 @@ export interface SubmitIdeaInputOptions {
   tldr: string;
   description: string;
   tags?: TagType[] | null;
+  expiryOption: IdeaExpiryOption;
+  headerImage?: string | null;
 }
 
 export interface SubmitVoteInputOptions {

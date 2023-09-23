@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { PropLotInputOptions, TagType, FilterType } from "./globalTypes";
+import { PropLotInputOptions, IdeaExpiryOption, TagType, FilterType } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: getPropLot
@@ -49,6 +49,8 @@ export interface getPropLot_propLot_list_Idea {
   votecount: number;
   createdAt: any;
   deleted: boolean;
+  expiryDate: any;
+  expiryOption: IdeaExpiryOption;
   ideaStats: getPropLot_propLot_list_Idea_ideaStats | null;
   closed: boolean;
   consensus: number | null;

@@ -76,6 +76,9 @@ export type Idea = {
   creatorId: Scalars['String'];
   deleted: Scalars['Boolean'];
   description: Scalars['String'];
+  expiryDate: Scalars['Date'];
+  expiryOption: IdeaExpiryOption;
+  headerImage?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   ideaStats?: Maybe<IdeaStats>;
   tags?: Maybe<Array<IdeaTags>>;
@@ -88,6 +91,12 @@ export type Idea = {
 export type IdeaCommentInputOptions = {
   ideaId: Scalars['String'];
 };
+
+export enum IdeaExpiryOption {
+  FOURTEEN_DAYS = 'FOURTEEN_DAYS',
+  SEVEN_DAYS = 'SEVEN_DAYS',
+  TWENTY_EIGHT_DAYS = 'TWENTY_EIGHT_DAYS'
+}
 
 export type IdeaInputOptions = {
   ideaId?: InputMaybe<Scalars['String']>;
@@ -248,6 +257,8 @@ export type SubmitCommentInputOptions = {
 
 export type SubmitIdeaInputOptions = {
   description: Scalars['String'];
+  expiryOption: IdeaExpiryOption;
+  headerImage?: InputMaybe<Scalars['String']>;
   tags?: InputMaybe<Array<TagType>>;
   title: Scalars['String'];
   tldr: Scalars['String'];
@@ -386,6 +397,7 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Scalars['Float']>;
   Idea: ResolverTypeWrapper<Idea>;
   IdeaCommentInputOptions: IdeaCommentInputOptions;
+  IdeaExpiryOption: IdeaExpiryOption;
   IdeaInputOptions: IdeaInputOptions;
   IdeaStats: ResolverTypeWrapper<IdeaStats>;
   IdeaTags: ResolverTypeWrapper<IdeaTags>;
@@ -506,6 +518,9 @@ export type IdeaResolvers<ContextType = any, ParentType extends ResolversParentT
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  expiryDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  expiryOption?: Resolver<ResolversTypes['IdeaExpiryOption'], ParentType, ContextType>;
+  headerImage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   ideaStats?: Resolver<Maybe<ResolversTypes['IdeaStats']>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<ResolversTypes['IdeaTags']>>, ParentType, ContextType>;

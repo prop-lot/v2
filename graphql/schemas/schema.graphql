@@ -45,6 +45,8 @@ input SubmitIdeaInputOptions {
   tldr: String!
   description: String!
   tags: [TagType!]
+  expiryOption: IdeaExpiryOption!
+  headerImage: String
 }
 
 input SubmitCommentInputOptions {
@@ -203,6 +205,9 @@ type Idea {
   closed: Boolean!
   consensus: Float
   deleted: Boolean!
+  expiryDate: Date!
+  expiryOption: IdeaExpiryOption!
+  headerImage: String
 }
 
 # Enums
@@ -233,4 +238,10 @@ enum TagType {
   CLOSED
   SOFTWARE
   HARDWARE
+}
+
+enum IdeaExpiryOption {
+  SEVEN_DAYS
+  FOURTEEN_DAYS
+  TWENTY_EIGHT_DAYS
 }

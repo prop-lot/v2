@@ -11,6 +11,9 @@ export const GET_IDEA_QUERY = gql`
       votecount
       createdAt
       deleted
+      expiryDate
+      expiryOption
+      headerImage
       ideaStats {
         comments
       }
