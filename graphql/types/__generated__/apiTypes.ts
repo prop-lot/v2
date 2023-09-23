@@ -28,11 +28,11 @@ export type Comment = {
   body: Scalars['String'];
   createdAt: Scalars['Date'];
   deleted: Scalars['Boolean'];
-  id: Scalars['Int'];
+  id: Scalars['String'];
   idea?: Maybe<Idea>;
-  ideaId: Scalars['Int'];
+  ideaId: Scalars['String'];
   parent?: Maybe<CommentParent>;
-  parentId?: Maybe<Scalars['Int']>;
+  parentId?: Maybe<Scalars['String']>;
   replies?: Maybe<Array<Comment>>;
 };
 
@@ -41,13 +41,13 @@ export type CommentParent = {
   authorId: Scalars['String'];
   body: Scalars['String'];
   createdAt: Scalars['Date'];
-  id: Scalars['Int'];
-  ideaId: Scalars['Int'];
+  id: Scalars['String'];
+  ideaId: Scalars['String'];
 };
 
 export type DeleteDataResponse = {
   __typename?: 'DeleteDataResponse';
-  id?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['String']>;
   success?: Maybe<Scalars['Boolean']>;
 };
 
@@ -76,7 +76,7 @@ export type Idea = {
   creatorId: Scalars['String'];
   deleted: Scalars['Boolean'];
   description: Scalars['String'];
-  id: Scalars['Int'];
+  id: Scalars['String'];
   ideaStats?: Maybe<IdeaStats>;
   tags?: Maybe<Array<IdeaTags>>;
   title: Scalars['String'];
@@ -86,11 +86,11 @@ export type Idea = {
 };
 
 export type IdeaCommentInputOptions = {
-  ideaId: Scalars['Int'];
+  ideaId: Scalars['String'];
 };
 
 export type IdeaInputOptions = {
-  ideaId?: InputMaybe<Scalars['Int']>;
+  ideaId?: InputMaybe<Scalars['String']>;
   sort?: InputMaybe<Sort_Type>;
 };
 
@@ -116,12 +116,12 @@ export type Mutation = {
 
 
 export type MutationDeleteIdeaArgs = {
-  id: Scalars['Int'];
+  id: Scalars['String'];
 };
 
 
 export type MutationDeleteIdeaCommentArgs = {
-  id: Scalars['Int'];
+  id: Scalars['String'];
 };
 
 
@@ -173,8 +173,6 @@ export type PropLotResponse = {
   __typename?: 'PropLotResponse';
   appliedFilterTags?: Maybe<Array<AppliedFilter>>;
   dateFilter?: Maybe<PropLotFilter>;
-  /** @deprecated Use list instead */
-  ideas?: Maybe<Array<Idea>>;
   list?: Maybe<Array<PropLotListItems>>;
   listFilter?: Maybe<PropLotFilter>;
   metadata: PropLotResponseMetadata;
@@ -244,7 +242,7 @@ export enum Sort_Type {
 
 export type SubmitCommentInputOptions = {
   body: Scalars['String'];
-  ideaId: Scalars['Int'];
+  ideaId: Scalars['String'];
   parentId?: InputMaybe<Scalars['Int']>;
 };
 
@@ -257,7 +255,7 @@ export type SubmitIdeaInputOptions = {
 
 export type SubmitVoteInputOptions = {
   direction: Scalars['Int'];
-  ideaId: Scalars['Int'];
+  ideaId: Scalars['String'];
 };
 
 export enum TagType {
@@ -301,8 +299,8 @@ export type UserStats = {
 export type Vote = {
   __typename?: 'Vote';
   direction: Scalars['Int'];
-  id: Scalars['Int'];
-  ideaId: Scalars['Int'];
+  id: Scalars['String'];
+  ideaId: Scalars['String'];
   voter: User;
   voterId: Scalars['String'];
   voterWeight: Scalars['Int'];
@@ -461,11 +459,11 @@ export type CommentResolvers<ContextType = any, ParentType extends ResolversPare
   body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   idea?: Resolver<Maybe<ResolversTypes['Idea']>, ParentType, ContextType>;
-  ideaId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  ideaId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parent?: Resolver<Maybe<ResolversTypes['CommentParent']>, ParentType, ContextType>;
-  parentId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   replies?: Resolver<Maybe<Array<ResolversTypes['Comment']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -474,8 +472,8 @@ export type CommentParentResolvers<ContextType = any, ParentType extends Resolve
   authorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  ideaId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ideaId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -484,7 +482,7 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type DeleteDataResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteDataResponse'] = ResolversParentTypes['DeleteDataResponse']> = {
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -508,7 +506,7 @@ export type IdeaResolvers<ContextType = any, ParentType extends ResolversParentT
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   ideaStats?: Resolver<Maybe<ResolversTypes['IdeaStats']>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<ResolversTypes['IdeaTags']>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -561,7 +559,6 @@ export type PropLotProfileResponseResolvers<ContextType = any, ParentType extend
 export type PropLotResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotResponse'] = ResolversParentTypes['PropLotResponse']> = {
   appliedFilterTags?: Resolver<Maybe<Array<ResolversTypes['AppliedFilter']>>, ParentType, ContextType>;
   dateFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
-  ideas?: Resolver<Maybe<Array<ResolversTypes['Idea']>>, ParentType, ContextType>;
   list?: Resolver<Maybe<Array<ResolversTypes['PropLotListItems']>>, ParentType, ContextType>;
   listFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
   metadata?: Resolver<ResolversTypes['PropLotResponseMetadata'], ParentType, ContextType>;
@@ -612,8 +609,8 @@ export type UserStatsResolvers<ContextType = any, ParentType extends ResolversPa
 
 export type VoteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Vote'] = ResolversParentTypes['Vote']> = {
   direction?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  ideaId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ideaId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   voter?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   voterId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   voterWeight?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

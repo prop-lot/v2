@@ -40,7 +40,7 @@ export interface PropLotProfileInputOptions {
 }
 
 export interface SubmitCommentInputOptions {
-  ideaId: number;
+  ideaId: string;
   body: string;
   parentId?: number | null;
 }
@@ -54,7 +54,7 @@ export interface SubmitIdeaInputOptions {
 
 export interface SubmitVoteInputOptions {
   direction: number;
-  ideaId: number;
+  ideaId: string;
 }
 
 //==============================================================

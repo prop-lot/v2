@@ -12,7 +12,7 @@ datasource db {
 }
 
 model Community {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   data        Json      @default("{ \"pfp\": \"\" }")
@@ -20,8 +20,17 @@ model Community {
   ideas       Idea[]
 }
 
+model Image {
+  id          String    @id @default(uuid())
+  url         String
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  ideaId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 model Idea {
-  id                    Int       @id @default(autoincrement())
+  id                    String    @id @default(uuid())
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   title                 String    @db.VarChar(50)
@@ -29,22 +38,28 @@ model Idea {
   description           String    @db.VarChar(1080)
   tokenSupplyOnCreate   Int?      @default(value: 0) // token supply at time of Idea creation.
   createdAtBlock        Int       @default(0)
-  legacyLockedScore     Int       @default(0) // legacy score from old system
   deleted               Boolean   @default(value: false)
   createdBy             User      @relation(fields: [creatorId], references: [wallet])
   creatorId             String
   community             Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  communityId           Int
+  communityId           String
   comments              Comment[]
   votes                 Vote[]
   tags                  Tag[]
+  images                Image[]
+  expiryOption          IdeaExpiryOption
+  expiryDate            DateTime  @default(now())
+
+  @@index([creatorId])
+  @@index([communityId])
+  @@index([deleted])
+  @@index([createdAt])
 }
 
 model User {
-  id                Int       @id @default(autoincrement())
+  id                String    @id @default(uuid())
   wallet            String    @unique
   ens               String?
-  legacyTokenCount  Int       @default(0)
   ideas             Idea[]
   votes             Vote[]
   comments          Comment[]
@@ -55,10 +70,10 @@ model User {
 // -1 for down
 // sum of direction = total score
 model Vote {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   direction   Int
   idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  ideaId      Int
+  ideaId      String
   voter       User      @relation(fields: [voterId], references: [wallet])
   voterId     String
   voterWeight Int       @default(0)
@@ -66,25 +81,31 @@ model Vote {
   updatedAt   DateTime  @updatedAt
 
   @@unique([ideaId, voterId])
+  @@index([voterId])
+  @@index([ideaId])
 }
 
 model Comment {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   body        String
   idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  ideaId      Int
+  ideaId      String
   author      User      @relation(fields: [authorId], references: [wallet])
   authorId    String
   replies     Comment[] @relation("Comment_Children")
   parent      Comment?  @relation("Comment_Children", fields: [parentId], references: [id], onDelete: Cascade)
-  parentId    Int?
+  parentId    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deleted     Boolean   @default(value: false)
+
+  @@index([authorId])
+  @@index([ideaId])
+  @@index([deleted])
 }
 
 model Tag {
-  id     Int @id @default(autoincrement())
+  id     String    @id @default(uuid())
   type   TagType @unique
   label  String
   Ideas  Idea[]
@@ -98,4 +119,10 @@ enum TagType {
   SOFTWARE
   HARDWARE
   OTHER
+}
+
+enum IdeaExpiryOption {
+  SEVEN_DAYS
+  FOURTEEN_DAYS
+  TWENTY_EIGHT_DAYS
 }

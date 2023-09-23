@@ -34,16 +34,16 @@ export interface getPropLotProfile_propLotProfile_profile {
 
 export interface getPropLotProfile_propLotProfile_list_Comment_parent {
   __typename: "CommentParent";
-  id: number;
+  id: string;
   body: string;
-  ideaId: number;
+  ideaId: string;
   authorId: string;
   createdAt: any;
 }
 
 export interface getPropLotProfile_propLotProfile_list_Comment_idea {
   __typename: "Idea";
-  id: number;
+  id: string;
   title: string;
   creatorId: string;
   closed: boolean;
@@ -52,10 +52,10 @@ export interface getPropLotProfile_propLotProfile_list_Comment_idea {
 
 export interface getPropLotProfile_propLotProfile_list_Comment {
   __typename: "Comment";
-  id: number;
+  id: string;
   body: string;
-  ideaId: number;
-  parentId: number | null;
+  ideaId: string;
+  parentId: string | null;
   authorId: string;
   createdAt: any;
   deleted: boolean;
@@ -81,9 +81,9 @@ export interface getPropLotProfile_propLotProfile_list_Idea_votes_voter {
 
 export interface getPropLotProfile_propLotProfile_list_Idea_votes {
   __typename: "Vote";
-  id: number;
+  id: string;
   voterId: string;
-  ideaId: number;
+  ideaId: string;
   direction: number;
   voterWeight: number;
   voter: getPropLotProfile_propLotProfile_list_Idea_votes_voter;
@@ -91,7 +91,7 @@ export interface getPropLotProfile_propLotProfile_list_Idea_votes {
 
 export interface getPropLotProfile_propLotProfile_list_Idea {
   __typename: "Idea";
-  id: number;
+  id: string;
   title: string;
   tldr: string;
   creatorId: string;

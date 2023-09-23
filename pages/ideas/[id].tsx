@@ -232,7 +232,7 @@ const IdeaPage = ({
             {!data.getIdea.closed && (
               <CommentInput
                 hasTokens={hasTokens}
-                ideaId={Number(id)}
+                ideaId={id}
                 parentId={undefined}
               />
             )}
@@ -289,7 +289,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
     const ideaData: ApolloQueryResult<getIdea> = await client.query({
       query: GET_IDEA_QUERY,
-      variables: { ideaId: parseInt(context.params.id as string, 10) },
+      variables: { ideaId: context.params.id },
       fetchPolicy: "no-cache",
       context: {
         clientName: "PropLot",

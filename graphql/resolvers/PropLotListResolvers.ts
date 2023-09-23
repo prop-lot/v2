@@ -171,17 +171,6 @@ const resolvers: IResolvers = {
     },
   },
   PropLotResponse: {
-    ideas: async (root): Promise<Idea[]> => {
-      const ideas: Idea[] = await IdeasService.findWhere({
-        sortBy: parseFilterParam(root.sortParam)?.value,
-        date: parseFilterParam(root.dateParam)?.value,
-        tags: root.tagParams.map((tag: string) => parseFilterParam(tag)?.value),
-        communityId: root.communityId,
-        isHomePage: root.isHomePage
-      });
-
-      return ideas;
-    },
     list: async (root): Promise<PropLotListItems[]> => {
       const listParam = parseFilterParam(root.listParam)?.value;
       let listItems: PropLotListItems[] = [];

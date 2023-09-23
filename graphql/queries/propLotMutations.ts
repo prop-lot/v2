@@ -37,7 +37,7 @@ export const SUBMIT_COMMENT_MUTATION = gql`
 `;
 
 export const DELETE_IDEA_COMMENT_MUTATION = gql`
-  mutation deleteIdeaComment($id: Int!) {
+  mutation deleteIdeaComment($id: String!) {
     deleteIdeaComment(id: $id) {
       body
       authorId
@@ -69,7 +69,7 @@ export const DELETE_IDEA_COMMENT_MUTATION = gql`
 `;
 
 export const DELETE_IDEA__MUTATION = gql`
-  mutation deleteIdea($id: Int!) {
+  mutation deleteIdea($id: String!) {
     deleteIdea(id: $id) {
       id
       success

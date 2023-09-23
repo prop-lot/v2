@@ -209,8 +209,8 @@ export default function IdeasHome({
                 <button
                   className={`${
                     nounBalance === 0
-                      ? "!bg-white !text-light-green"
-                      : "!bg-grey/20 !text-grey"
+                      ? "!bg-grey/20 !text-grey"
+                      : "!bg-white !text-light-green"
                   } !border-grey border-[1px] !text-sm !rounded-[10px] !font-inter !font-bold !pt-sm !pb-sm !pl-md !pr-md self-center`}
                   onClick={() => {
                     if (nounBalance > 0) {

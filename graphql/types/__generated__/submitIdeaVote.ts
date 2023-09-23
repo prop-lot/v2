@@ -16,9 +16,9 @@ export interface submitIdeaVote_submitIdeaVote_voter {
 
 export interface submitIdeaVote_submitIdeaVote {
   __typename: "Vote";
-  id: number;
+  id: string;
   voterId: string;
-  ideaId: number;
+  ideaId: string;
   direction: number;
   voterWeight: number;
   voter: submitIdeaVote_submitIdeaVote_voter;

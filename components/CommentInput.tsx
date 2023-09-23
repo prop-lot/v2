@@ -15,9 +15,9 @@ const CommentInput = ({
   hideInput = undefined,
   parentId,
 }: {
-  ideaId: number;
+  ideaId: string;
   hasTokens: boolean;
-  parentId: number | undefined;
+  parentId: string | undefined;
   hideInput?: (val: boolean) => void;
 }) => {
   const [commentValue, setCommentValue] = useState<string>("");
@@ -35,7 +35,7 @@ const CommentInput = ({
   });
 
   const getCommentMutationArgs = (
-    ideaId: number,
+    ideaId: string,
     body: string,
     parentId: number | undefined
   ) => {
@@ -52,9 +52,9 @@ const CommentInput = ({
   };
 
   const submitComment = async (
-    ideaId: number,
+    ideaId: string,
     body: string,
-    parentId: number | undefined
+    parentId: string | undefined
   ) => {
     if (!isLoggedIn) {
       try {

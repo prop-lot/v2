@@ -9,7 +9,7 @@
 
 export interface deleteIdea_deleteIdea {
   __typename: "DeleteDataResponse";
-  id: number | null;
+  id: string | null;
   success: boolean | null;
 }
 
@@ -18,5 +18,5 @@ export interface deleteIdea {
 }
 
 export interface deleteIdeaVariables {
-  id: number;
+  id: string;
 }

@@ -11,7 +11,7 @@ import { SubmitIdeaInputOptions } from "./globalTypes";
 
 export interface submitIdea_submitIdea {
   __typename: "Idea";
-  id: number;
+  id: string;
 }
 
 export interface submitIdea {

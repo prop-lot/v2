@@ -173,7 +173,7 @@ export default function CommunityHome({
             if (listItem.__typename === "Idea") {
               return (
                 <IdeaRow
-                  key={`idea-${idx}`}
+                  key={listItem.id}
                   idea={listItem}
                   nounBalance={nounBalance}
                   refetch={() => {

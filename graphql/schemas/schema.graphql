@@ -17,8 +17,8 @@ type Mutation {
   submitIdeaVote(options: SubmitVoteInputOptions!): Vote!
   submitIdea(options: SubmitIdeaInputOptions!): Idea!
   submitIdeaComment(options: SubmitCommentInputOptions!): Comment!
-  deleteIdeaComment(id: Int!): Comment!
-  deleteIdea(id: Int!): DeleteDataResponse!
+  deleteIdeaComment(id: String!): Comment!
+  deleteIdea(id: String!): DeleteDataResponse!
 }
 
 # Query input types
@@ -27,17 +27,17 @@ input UserInputOptions {
 }
 
 input IdeaInputOptions {
-  ideaId: Int
+  ideaId: String
   sort: SORT_TYPE
 }
 
 input IdeaCommentInputOptions {
-  ideaId: Int!
+  ideaId: String!
 }
 
 input SubmitVoteInputOptions {
   direction: Int!
-  ideaId: Int!
+  ideaId: String!
 }
 
 input SubmitIdeaInputOptions {
@@ -48,7 +48,7 @@ input SubmitIdeaInputOptions {
 }
 
 input SubmitCommentInputOptions {
-  ideaId: Int!
+  ideaId: String!
   body: String!
   parentId: Int
 }
@@ -67,7 +67,6 @@ input PropLotProfileInputOptions {
 # Query response types
 
 type PropLotResponse {
-  ideas: [Idea!] @deprecated(reason: "Use list instead")
   list: [PropLotListItems!]
   sortFilter: PropLotFilter
   tagFilter: PropLotFilter
@@ -86,7 +85,7 @@ type PropLotProfileResponse {
 }
 
 type DeleteDataResponse {
-  id: Int
+  id: String
   success: Boolean
 }
 
@@ -150,21 +149,21 @@ type User {
 }
 
 type Vote {
-  id: Int!
+  id: String!
   voterId: String!
-  ideaId: Int!
+  ideaId: String!
   direction: Int!
   voterWeight: Int!
   voter: User!
 }
 
 type Comment {
-  id: Int!
+  id: String!
   body: String!
-  ideaId: Int!
+  ideaId: String!
   idea: Idea
   parent: CommentParent
-  parentId: Int
+  parentId: String
   authorId: String!
   replies: [Comment!]
   createdAt: Date!
@@ -172,9 +171,9 @@ type Comment {
 }
 
 type CommentParent {
-  id: Int!
+  id: String!
   body: String!
-  ideaId: Int!
+  ideaId: String!
   authorId: String!
   createdAt: Date!
 }
@@ -189,7 +188,7 @@ type IdeaTags {
 }
 
 type Idea {
-  id: Int!
+  id: String!
   title: String!
   tldr: String!
   description: String!

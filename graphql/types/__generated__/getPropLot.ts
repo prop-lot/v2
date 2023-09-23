@@ -31,9 +31,9 @@ export interface getPropLot_propLot_list_Idea_votes_voter {
 
 export interface getPropLot_propLot_list_Idea_votes {
   __typename: "Vote";
-  id: number;
+  id: string;
   voterId: string;
-  ideaId: number;
+  ideaId: string;
   direction: number;
   voterWeight: number;
   voter: getPropLot_propLot_list_Idea_votes_voter;
@@ -41,7 +41,7 @@ export interface getPropLot_propLot_list_Idea_votes {
 
 export interface getPropLot_propLot_list_Idea {
   __typename: "Idea";
-  id: number;
+  id: string;
   title: string;
   tldr: string;
   creatorId: string;

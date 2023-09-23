@@ -118,7 +118,7 @@ class IdeasService {
     wallet?: string;
     tab?: string;
     hideDeleted?: boolean;
-    communityId: number;
+    communityId: string;
     isHomePage?: boolean;
   }) {
     try {
@@ -133,7 +133,7 @@ class IdeasService {
             lte: dateRange.lte,
           },
           ...profileFilters,
-          communityId: communityId || 0,
+          communityId: communityId,
         },
         include: {
           tags: true,
@@ -179,7 +179,7 @@ class IdeasService {
     }
   }
 
-  static async get(id: number, communityId: number) {
+  static async get(id: number, communityId: string) {
     try {
       const idea = await prisma.idea.findUnique({
         where: {
@@ -221,7 +221,7 @@ class IdeasService {
   }
 
   static async createIdea(
-    data: { title: string; tldr: string; description: string; tags: TagType[], communityId: number; totalSupply: number; currentBlock: number; authorTokenCount: number; },
+    data: { title: string; tldr: string; description: string; tags: TagType[], communityId: string; totalSupply: number; currentBlock: number; authorTokenCount: number; },
     user?: { wallet: string },
   ) {
     try {
@@ -361,7 +361,7 @@ class IdeasService {
     }
   }
 
-  static async getVotesByIdea(id: number) {
+  static async getVotesByIdea(id: string) {
     try {
       const votes = prisma.vote.findMany({
         where: {
@@ -375,7 +375,7 @@ class IdeasService {
     }
   }
 
-  static async getIdeaComments(id: number) {
+  static async getIdeaComments(id: string) {
     try {
       const comment = prisma.comment.findMany({
         where: {
@@ -449,7 +449,7 @@ class IdeasService {
     }
   }
 
-  static async isIdeaDeleted(id: number) {
+  static async isIdeaDeleted(id: string) {
     const idea = await prisma.idea.findUnique({
       where: {
         id,
@@ -459,7 +459,7 @@ class IdeasService {
     return idea?.deleted;
   }
 
-  static async isIdeaClosed(id: number) {
+  static async isIdeaClosed(id: string) {
     // Load idea first to check if it's been closed before allowing updates.
     const idea = await prisma.idea.findUnique({
       where: {
@@ -474,7 +474,7 @@ class IdeasService {
     return getIsClosed(idea);
   }
 
-  static async deleteIdea(id: number) {
+  static async deleteIdea(id: string) {
     try {
       const idea = await prisma.idea.update({
         where: {
@@ -491,7 +491,7 @@ class IdeasService {
     }
   }
 
-  static async getComment(id: number) {
+  static async getComment(id: string) {
     try {
       const comment = await prisma.comment.findUnique({
         where: {
@@ -505,7 +505,7 @@ class IdeasService {
     }
   }
 
-  static async getIdeaRaw(id: number) {
+  static async getIdeaRaw(id: string) {
     try {
       const idea = await prisma.idea.findUnique({
         where: {
@@ -519,7 +519,7 @@ class IdeasService {
     }
   }
 
-  static async deleteComment(id: number) {
+  static async deleteComment(id: string) {
     try {
       const comment = await prisma.comment.update({
         where: {

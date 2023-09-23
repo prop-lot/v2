@@ -24,8 +24,8 @@ const resolvers: IResolvers = {
   Query: {
     getIdea: async (_parent: any, args: QueryGetIdeaArgs, context) => {
       const idea = await IdeasService.get(
-        args.options.ideaId as number,
-        context.communityId as number
+        args.options.ideaId as string,
+        context.communityId as string
       );
       return idea;
     },
@@ -42,7 +42,7 @@ const resolvers: IResolvers = {
       _parent: any,
       args: QueryGetIdeaCommentsArgs
     ): Promise<Comment[]> => {
-      const comments: Comment[] = await IdeasService.getIdeaComments(args.options.ideaId as number);
+      const comments: Comment[] = await IdeasService.getIdeaComments(args.options.ideaId as string);
       return comments;
     },
   },
@@ -80,7 +80,7 @@ const resolvers: IResolvers = {
         throw new Error("Failed to delete idea: you are not the author");
       }
 
-      const result: { id: number; success: boolean } =
+      const result: { id: string; success: boolean } =
         await IdeasService.deleteIdea(args.id);
       return result;
     },
