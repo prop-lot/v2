@@ -12,7 +12,7 @@ datasource db {
 }
 
 model Community {
-  uuid        String    @id @default(uuid())
+  id          String    @id @default(uuid())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   data        Json      @default("{ \"pfp\": \"\" }")
@@ -21,16 +21,16 @@ model Community {
 }
 
 model Image {
-  uuid        String    @id @default(uuid())
+  id          String    @id @default(uuid())
   url         String
-  idea        Idea      @relation(fields: [ideaId], references: [uuid], onDelete: Cascade)
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
   ideaId      String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
 
 model Idea {
-  uuid                  String    @id @default(uuid())
+  id                    String    @id @default(uuid())
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   title                 String    @db.VarChar(50)
@@ -41,7 +41,7 @@ model Idea {
   deleted               Boolean   @default(value: false)
   createdBy             User      @relation(fields: [creatorId], references: [wallet])
   creatorId             String
-  community             Community @relation(fields: [communityId], references: [uuid], onDelete: Cascade)
+  community             Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
   communityId           String
   comments              Comment[]
   votes                 Vote[]
@@ -57,7 +57,7 @@ model Idea {
 }
 
 model User {
-  uuid              String    @id @default(uuid())
+  id                String    @id @default(uuid())
   wallet            String    @unique
   ens               String?
   ideas             Idea[]
@@ -70,9 +70,9 @@ model User {
 // -1 for down
 // sum of direction = total score
 model Vote {
-  uuid        String    @id @default(uuid())
+  id          String    @id @default(uuid())
   direction   Int
-  idea        Idea      @relation(fields: [ideaId], references: [uuid], onDelete: Cascade)
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
   ideaId      String
   voter       User      @relation(fields: [voterId], references: [wallet])
   voterId     String
@@ -86,14 +86,14 @@ model Vote {
 }
 
 model Comment {
-  uuid        String    @id @default(uuid())
+  id          String    @id @default(uuid())
   body        String
-  idea        Idea      @relation(fields: [ideaId], references: [uuid], onDelete: Cascade)
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
   ideaId      String
   author      User      @relation(fields: [authorId], references: [wallet])
   authorId    String
   replies     Comment[] @relation("Comment_Children")
-  parent      Comment?  @relation("Comment_Children", fields: [parentId], references: [uuid], onDelete: Cascade)
+  parent      Comment?  @relation("Comment_Children", fields: [parentId], references: [id], onDelete: Cascade)
   parentId    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -105,7 +105,7 @@ model Comment {
 }
 
 model Tag {
-  uuid   String    @id @default(uuid())
+  id     String    @id @default(uuid())
   type   TagType @unique
   label  String
   Ideas  Idea[]

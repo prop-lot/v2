@@ -6,29 +6,29 @@ CREATE TYPE "IdeaExpiryOption" AS ENUM ('SEVEN_DAYS', 'FOURTEEN_DAYS', 'TWENTY_E
 
 -- CreateTable
 CREATE TABLE "Community" (
-    "uuid" TEXT NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "data" JSONB NOT NULL DEFAULT '{ "pfp": "" }',
     "uname" TEXT NOT NULL,
 
-    CONSTRAINT "Community_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Community_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Image" (
-    "uuid" TEXT NOT NULL,
+    "id" TEXT NOT NULL,
     "url" TEXT NOT NULL,
     "ideaId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Image_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Idea" (
-    "uuid" TEXT NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "title" VARCHAR(50) NOT NULL,
@@ -42,21 +42,21 @@ CREATE TABLE "Idea" (
     "expiryOption" "IdeaExpiryOption" NOT NULL,
     "expiryDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Idea_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Idea_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "User" (
-    "uuid" TEXT NOT NULL,
+    "id" TEXT NOT NULL,
     "wallet" TEXT NOT NULL,
     "ens" TEXT,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Vote" (
-    "uuid" TEXT NOT NULL,
+    "id" TEXT NOT NULL,
     "direction" INTEGER NOT NULL,
     "ideaId" TEXT NOT NULL,
     "voterId" TEXT NOT NULL,
@@ -64,12 +64,12 @@ CREATE TABLE "Vote" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Vote_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Vote_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Comment" (
-    "uuid" TEXT NOT NULL,
+    "id" TEXT NOT NULL,
     "body" TEXT NOT NULL,
     "ideaId" TEXT NOT NULL,
     "authorId" TEXT NOT NULL,
@@ -78,16 +78,16 @@ CREATE TABLE "Comment" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "Comment_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Tag" (
-    "uuid" TEXT NOT NULL,
+    "id" TEXT NOT NULL,
     "type" "TagType" NOT NULL,
     "label" TEXT NOT NULL,
 
-    CONSTRAINT "Tag_pkey" PRIMARY KEY ("uuid")
+    CONSTRAINT "Tag_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -142,31 +142,31 @@ CREATE UNIQUE INDEX "_IdeaToTag_AB_unique" ON "_IdeaToTag"("A", "B");
 CREATE INDEX "_IdeaToTag_B_index" ON "_IdeaToTag"("B");
 
 -- AddForeignKey
-ALTER TABLE "Image" ADD CONSTRAINT "Image_ideaId_fkey" FOREIGN KEY ("ideaId") REFERENCES "Idea"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Image" ADD CONSTRAINT "Image_ideaId_fkey" FOREIGN KEY ("ideaId") REFERENCES "Idea"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Idea" ADD CONSTRAINT "Idea_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("wallet") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Idea" ADD CONSTRAINT "Idea_communityId_fkey" FOREIGN KEY ("communityId") REFERENCES "Community"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Idea" ADD CONSTRAINT "Idea_communityId_fkey" FOREIGN KEY ("communityId") REFERENCES "Community"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Vote" ADD CONSTRAINT "Vote_ideaId_fkey" FOREIGN KEY ("ideaId") REFERENCES "Idea"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Vote" ADD CONSTRAINT "Vote_ideaId_fkey" FOREIGN KEY ("ideaId") REFERENCES "Idea"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Vote" ADD CONSTRAINT "Vote_voterId_fkey" FOREIGN KEY ("voterId") REFERENCES "User"("wallet") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comment" ADD CONSTRAINT "Comment_ideaId_fkey" FOREIGN KEY ("ideaId") REFERENCES "Idea"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_ideaId_fkey" FOREIGN KEY ("ideaId") REFERENCES "Idea"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("wallet") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comment" ADD CONSTRAINT "Comment_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Comment"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Comment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_IdeaToTag" ADD CONSTRAINT "_IdeaToTag_A_fkey" FOREIGN KEY ("A") REFERENCES "Idea"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_IdeaToTag" ADD CONSTRAINT "_IdeaToTag_A_fkey" FOREIGN KEY ("A") REFERENCES "Idea"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_IdeaToTag" ADD CONSTRAINT "_IdeaToTag_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_IdeaToTag" ADD CONSTRAINT "_IdeaToTag_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
