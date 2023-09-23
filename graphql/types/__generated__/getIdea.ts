@@ -27,9 +27,9 @@ export interface getIdea_getIdea_votes_voter {
 
 export interface getIdea_getIdea_votes {
   __typename: "Vote";
-  id: number;
+  id: string;
   voterId: string;
-  ideaId: number;
+  ideaId: string;
   direction: number;
   voterWeight: number;
   voter: getIdea_getIdea_votes_voter;
@@ -37,7 +37,7 @@ export interface getIdea_getIdea_votes {
 
 export interface getIdea_getIdea {
   __typename: "Idea";
-  id: number;
+  id: string;
   title: string;
   tldr: string;
   creatorId: string;
@@ -57,5 +57,5 @@ export interface getIdea {
 }
 
 export interface getIdeaVariables {
-  ideaId: number;
+  ideaId: string;
 }

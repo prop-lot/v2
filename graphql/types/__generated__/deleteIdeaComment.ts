@@ -10,22 +10,22 @@
 export interface deleteIdeaComment_deleteIdeaComment_replies_replies {
   __typename: "Comment";
   body: string;
-  id: number;
+  id: string;
   deleted: boolean;
   authorId: string;
-  parentId: number | null;
-  ideaId: number;
+  parentId: string | null;
+  ideaId: string;
   createdAt: any;
 }
 
 export interface deleteIdeaComment_deleteIdeaComment_replies {
   __typename: "Comment";
   body: string;
-  id: number;
+  id: string;
   deleted: boolean;
   authorId: string;
-  parentId: number | null;
-  ideaId: number;
+  parentId: string | null;
+  ideaId: string;
   createdAt: any;
   replies: deleteIdeaComment_deleteIdeaComment_replies_replies[] | null;
 }
@@ -35,9 +35,9 @@ export interface deleteIdeaComment_deleteIdeaComment {
   body: string;
   authorId: string;
   deleted: boolean;
-  id: number;
-  parentId: number | null;
-  ideaId: number;
+  id: string;
+  parentId: string | null;
+  ideaId: string;
   createdAt: any;
   replies: deleteIdeaComment_deleteIdeaComment_replies[] | null;
 }
@@ -47,5 +47,5 @@ export interface deleteIdeaComment {
 }
 
 export interface deleteIdeaCommentVariables {
-  id: number;
+  id: string;
 }

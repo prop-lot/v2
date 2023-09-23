@@ -10,10 +10,10 @@
 export interface getIdeaComments_getIdeaComments_replies_replies {
   __typename: "Comment";
   body: string;
-  id: number;
+  id: string;
   deleted: boolean;
-  parentId: number | null;
-  ideaId: number;
+  parentId: string | null;
+  ideaId: string;
   createdAt: any;
   authorId: string;
 }
@@ -21,10 +21,10 @@ export interface getIdeaComments_getIdeaComments_replies_replies {
 export interface getIdeaComments_getIdeaComments_replies {
   __typename: "Comment";
   body: string;
-  id: number;
+  id: string;
   deleted: boolean;
-  parentId: number | null;
-  ideaId: number;
+  parentId: string | null;
+  ideaId: string;
   createdAt: any;
   authorId: string;
   replies: getIdeaComments_getIdeaComments_replies_replies[] | null;
@@ -33,10 +33,10 @@ export interface getIdeaComments_getIdeaComments_replies {
 export interface getIdeaComments_getIdeaComments {
   __typename: "Comment";
   body: string;
-  id: number;
-  parentId: number | null;
+  id: string;
+  parentId: string | null;
   deleted: boolean;
-  ideaId: number;
+  ideaId: string;
   createdAt: any;
   authorId: string;
   replies: getIdeaComments_getIdeaComments_replies[] | null;
@@ -47,5 +47,5 @@ export interface getIdeaComments {
 }
 
 export interface getIdeaCommentsVariables {
-  ideaId: number;
+  ideaId: string;
 }
