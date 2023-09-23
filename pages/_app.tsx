@@ -1,5 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/styles/globals.css";
+import { TwicInstall } from "@twicpics/components/react";
+import "@twicpics/components/style.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { WagmiConfig, createClient } from "wagmi";
@@ -14,6 +16,7 @@ import { DEFAULT_HOMEPAGE_MATCH } from ".";
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
 const walletconnectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROEJCT_ID;
+const twicpicsDomain = process.env.TWIC_PICS_DOMAIN;
 
 const client = createClient(
   getDefaultClient({
@@ -33,6 +36,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <TwicInstall domain={twicpicsDomain} />
       <ApolloProvider client={ApolloClient}>
         <WagmiConfig client={client}>
           <ConnectKitProvider>
