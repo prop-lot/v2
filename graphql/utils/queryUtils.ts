@@ -118,20 +118,16 @@ export const LIST_TYPE_FILTERS: { [key: string]: any } = {
 };
 
 export const getIsClosed = (idea: any) => {
-  return moment(idea.createdAt).isBefore(
-    moment().subtract(7, "days").toISOString()
-  );
+  return moment.utc().isAfter(moment.utc(idea.expiryDate));
 };
 
 export const getTimeToClose = (idea: any) => {
-  const closeDate = moment(idea.createdAt).add(7, "days");
-  const now = moment();
+  const closeDate = moment.utc(idea.expiryDate);
+  const now = moment.utc();
 
-  const hoursDifference = closeDate.diff(now, "hours");
-  const daysDifference = closeDate.diff(now, "days");
-
+  const duration = moment.duration(closeDate.diff(now));
   return {
-    daysLeft: daysDifference,
-    hoursLeft: hoursDifference,
+    daysLeft: duration.days(),
+    hoursLeft: duration.hours(),
   };
 };
