@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useContractWrite, useContractRead } from "wagmi";
-import { Row, Container, Col } from "react-bootstrap";
 import { abi as NounsDAODataABI } from "../lib/nouns/abis/NounsDAOData";
 import { useForm } from "react-hook-form";
 import { contracts } from "../lib/nouns/contracts";
@@ -170,105 +169,111 @@ const CandidatePage = () => {
   };
 
   return (
-    <Container fluid={"lg"} className="mt-8 mb-12">
-      <Row className="align-items-center">
-        <Col lg={7} className="mx-auto">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <h1 className="text-black text-4xl font-bold">New Proposal</h1>
-            <p className="mt-4">
-              Fill in the form below to submit your proposal for a consensus
-              check. Once the proposal receives sponsorship from at least two
-              Nouns, it will be promoted to a governance vote for a final
-              decision.
-            </p>
-            <p className="mt-4">
-              This is a proposal to{" "}
-              <a href="#" target="_blank" className="text-green-400">
-                Nouner name
-              </a>{" "}
-              idea{" "}
-              <a href="#" target="_blank" className="text-green-400">
-                Idea name
-              </a>
-              .
-            </p>
-            <h3 className="mt-4 font-bold text-xl">Proposal Details</h3>
-            <div className="flex flex-col my-4">
-              <div className="flex justify-between w-full items-center">
-                <label className="font-bold mb-2">Title</label>
-              </div>
-              <input
-                {...register("title")}
-                type="text"
-                className="border rounded-lg p-2"
-                placeholder="Give your candidate a name..."
-              />
+    <main
+      className=""
+      style={{
+        width: "100%",
+        position: "relative",
+        backgroundImage: "url(/background-image.svg)",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        backgroundSize: "100% auto",
+      }}
+    >
+      <div className="max-w-screen-md mx-auto bg-white py-12">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <h1 className="text-black text-[36px] font-bold">New Proposal</h1>
+          <p className="mt-4">
+            Fill in the form below to submit your proposal for a consensus
+            check. Once the proposal receives sponsorship from at least two
+            Nouns, it will be promoted to a governance vote for a final
+            decision.
+          </p>
+          <p className="mt-4">
+            This is a proposal to{" "}
+            <a href="#" target="_blank" className="text-green">
+              Nouner name
+            </a>{" "}
+            idea{" "}
+            <a href="#" target="_blank" className="text-green">
+              Idea name
+            </a>
+            .
+          </p>
+          <h3 className="mt-4 font-bold text-xl">Proposal Details</h3>
+          <div className="flex flex-col my-4">
+            <div className="flex justify-between w-full items-center">
+              <label className="font-bold mb-2">Title</label>
             </div>
-            <div className="flex flex-col my-4">
-              <div className="flex justify-between w-full items-center">
-                <label className="font-bold mb-2">Description</label>
-              </div>
-              <textarea
-                {...register("description")}
-                className="border rounded-lg p-2"
-                placeholder="Describe your candidate proposal"
-              />
+            <input
+              {...register("title")}
+              type="text"
+              className="border rounded-lg p-2"
+              placeholder="Give your candidate a name..."
+            />
+          </div>
+          <div className="flex flex-col my-4">
+            <div className="flex justify-between w-full items-center">
+              <label className="font-bold mb-2">Details</label>
             </div>
-            <h3 className="mt-4 font-bold text-xl">On-chain Actions</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <select
-                  className="w-full border rounded p-2"
-                  onChange={(e) => {
-                    setProposalType(e.target.value as ProposalType);
-                  }}
-                >
-                  <option disabled>Choose action type</option>
-                  <option value={ProposalType.TRANSFER_FUNDS}>
-                    Transfer Funds
-                  </option>
-                  <option value={ProposalType.STREAM_FUNDS}>
-                    Stream Funds
-                  </option>
-                  <option value={ProposalType.FUNCTION_CALL}>
-                    Function Call
-                  </option>
-                </select>
-              </div>
-              <div className="bg-gray-200 rounded p-4 flex flex-col space-y-3">
-                <h3 className="text-lg font-bold">Supported action types</h3>
-                <span>
-                  <strong>Transfer funds:</strong> Send USDC, ETH
-                </span>
-                <span>
-                  <strong>Stream funds:</strong> Stream USDC or WETH
-                </span>
-                <span>
-                  <strong>Function call:</strong> Call a contract function
-                </span>
-              </div>
+            <textarea
+              {...register("description")}
+              className="border rounded-lg p-2 scroll-py-2 min-h-[300px]"
+              placeholder="Describe your candidate proposal"
+            />
+          </div>
+          <h3 className="font-bold text-xl my-6">On-chain Actions</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <select
+                className="w-full border rounded p-2"
+                onChange={(e) => {
+                  setProposalType(e.target.value as ProposalType);
+                }}
+              >
+                <option disabled>Choose action type</option>
+                <option value={ProposalType.TRANSFER_FUNDS}>
+                  Transfer Funds
+                </option>
+                <option value={ProposalType.STREAM_FUNDS}>Stream Funds</option>
+                <option value={ProposalType.FUNCTION_CALL}>
+                  Function Call
+                </option>
+              </select>
             </div>
-            <section className="mt-4">
-              {proposalType && (
-                <ProposalForm proposalType={proposalType} register={register} />
-              )}
-            </section>
-            {/* TODO: add disabled state to button */}
-            <button
-              className="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg mt-4"
-              type="submit"
-            >
-              Submit Proposal
-            </button>
-            <span className="text-gray-400 text-sm mt-4 block">
-              To prevent spam, a payment of 0.01 ETH is required to submit
-              proposals, unless you are a Noun holder. All of the proceeds are
-              sent to the Noun DAO treasury.
-            </span>
-          </form>
-        </Col>
-      </Row>
-    </Container>
+            <div className="bg-gray-200 rounded p-4 flex flex-col space-y-3">
+              <h3 className="text-lg font-bold">Supported action types</h3>
+              <span>
+                <strong>Transfer funds:</strong> Send USDC, ETH
+              </span>
+              <span>
+                <strong>Stream funds:</strong> Stream USDC or WETH
+              </span>
+              <span>
+                <strong>Function call:</strong> Call a contract function
+              </span>
+            </div>
+          </div>
+          <section className="mt-4">
+            {proposalType && (
+              <ProposalForm proposalType={proposalType} register={register} />
+            )}
+          </section>
+          {/* TODO: add disabled state to button */}
+          <button
+            className="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg mt-4"
+            type="submit"
+          >
+            Submit Proposal
+          </button>
+          <span className="text-gray-400 text-sm mt-4 block">
+            To prevent spam, a payment of 0.01 ETH is required to submit
+            proposals, unless you are a Noun holder. All of the proceeds are
+            sent to the Noun DAO treasury.
+          </span>
+        </form>
+      </div>
+    </main>
   );
 };
 
