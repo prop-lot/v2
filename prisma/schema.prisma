@@ -12,8 +12,7 @@ datasource db {
 }
 
 model Community {
-  id          Int       @id @default(autoincrement())
-  uuid        String    @unique @default(uuid())
+  uuid        String    @id @default(uuid())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   data        Json      @default("{ \"pfp\": \"\" }")
@@ -22,18 +21,16 @@ model Community {
 }
 
 model Image {
-  id          Int       @id @default(autoincrement())
-  uuid        String    @unique @default(uuid())
+  uuid        String    @id @default(uuid())
   url         String
-  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  ideaId      Int
+  idea        Idea      @relation(fields: [ideaId], references: [uuid], onDelete: Cascade)
+  ideaId      String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
 
 model Idea {
-  id                    Int       @id @default(autoincrement())
-  uuid                  String    @unique @default(uuid())
+  uuid                  String    @id @default(uuid())
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   title                 String    @db.VarChar(50)
@@ -44,8 +41,8 @@ model Idea {
   deleted               Boolean   @default(value: false)
   createdBy             User      @relation(fields: [creatorId], references: [wallet])
   creatorId             String
-  community             Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  communityId           Int
+  community             Community @relation(fields: [communityId], references: [uuid], onDelete: Cascade)
+  communityId           String
   comments              Comment[]
   votes                 Vote[]
   tags                  Tag[]
@@ -60,8 +57,7 @@ model Idea {
 }
 
 model User {
-  id                Int       @id @default(autoincrement())
-  uuid              String    @unique @default(uuid())
+  uuid              String    @id @default(uuid())
   wallet            String    @unique
   ens               String?
   ideas             Idea[]
@@ -74,11 +70,10 @@ model User {
 // -1 for down
 // sum of direction = total score
 model Vote {
-  id          Int       @id @default(autoincrement())
-  uuid        String    @unique @default(uuid())
+  uuid        String    @id @default(uuid())
   direction   Int
-  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  ideaId      Int
+  idea        Idea      @relation(fields: [ideaId], references: [uuid], onDelete: Cascade)
+  ideaId      String
   voter       User      @relation(fields: [voterId], references: [wallet])
   voterId     String
   voterWeight Int       @default(0)
@@ -91,16 +86,15 @@ model Vote {
 }
 
 model Comment {
-  id          Int       @id @default(autoincrement())
-  uuid        String    @unique @default(uuid())
+  uuid        String    @id @default(uuid())
   body        String
-  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  ideaId      Int
+  idea        Idea      @relation(fields: [ideaId], references: [uuid], onDelete: Cascade)
+  ideaId      String
   author      User      @relation(fields: [authorId], references: [wallet])
   authorId    String
   replies     Comment[] @relation("Comment_Children")
-  parent      Comment?  @relation("Comment_Children", fields: [parentId], references: [id], onDelete: Cascade)
-  parentId    Int?
+  parent      Comment?  @relation("Comment_Children", fields: [parentId], references: [uuid], onDelete: Cascade)
+  parentId    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deleted     Boolean   @default(value: false)
@@ -111,8 +105,7 @@ model Comment {
 }
 
 model Tag {
-  id     Int @id @default(autoincrement())
-  uuid   String  @unique @default(uuid())
+  uuid   String    @id @default(uuid())
   type   TagType @unique
   label  String
   Ideas  Idea[]

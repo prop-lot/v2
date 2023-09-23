@@ -71,7 +71,7 @@ async function seed() {
   for (let i = 0; i < 15; i++) {
     const idea = await prisma.idea.create({
       data: {
-        communityId: i % 2 === 0 ? community.id : community2.id,
+        communityId: i % 2 === 0 ? community.uuid : community2.uuid,
         title: chance.word({ length: 5 }),
         tldr: chance.sentence({ words: 5 }),
         description: chance.sentence({ words: 10 }),
@@ -88,7 +88,7 @@ async function seed() {
     for (let i = 0; i < 20; i++) {
       await prisma.vote.create({
         data: {
-          ideaId: idea.id,
+          ideaId: idea.uuid,
           voterId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0f${
             i < 10 ? `c${i}` : i
           }`,
