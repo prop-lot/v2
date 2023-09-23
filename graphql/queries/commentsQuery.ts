@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const GET_IDEA_COMMENTS = gql`
-  query getIdeaComments($ideaId: Int!) {
+  query getIdeaComments($ideaId: String!) {
     getIdeaComments(options: { ideaId: $ideaId }) {
       body
       id
