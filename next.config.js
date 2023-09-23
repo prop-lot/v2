@@ -11,7 +11,7 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ['i.seadn.io'],
+    domains: ['i.seadn.io', 'proplot.twic.pics', 'proplot-images.s3.us-west-1.amazonaws.com'],
     loader: 'default',
   },
   publicRuntimeConfig: {},
