@@ -8,12 +8,8 @@ import { StandaloneNounCircular } from "./NounCircular";
 import { BigNumber } from "ethers";
 import useHomeLiveData from "@/hooks/useHomeLiveData";
 
-const CommunityHomeLiveDataBoard = ({
-  community,
-}: {
-  community: Community;
-}) => {
-  const liveData = useHomeLiveData(community.uname);
+const CommunityHomeLiveDataBoard = () => {
+  const liveData = useHomeLiveData("nouns");
 
   return (
     <section className="flex flex-1 flex-col gap-lg max-w-screen-xl mx-auto px-lg mt-xl w-full">
@@ -62,7 +58,7 @@ const CommunityHomeLiveDataBoard = ({
               </div>
             </div>
           </div>
-          {liveData?.previousAuctions?.map((auction: any, idx) => {
+          {liveData?.previousAuctions?.map((auction: any, idx: number) => {
             return (
               <div
                 key={auction.id}
@@ -84,7 +80,9 @@ const CommunityHomeLiveDataBoard = ({
                   />
                 </Link>
                 <div className="rounded-lg flex-col justify-start items-start inline-flex">
-                  <div className="text-black text-base font-bold">Noun {auction.noun?.id}</div>
+                  <div className="text-black text-base font-bold">
+                    Noun {auction.noun?.id}
+                  </div>
                   <div className="justify-start items-start gap-2 inline-flex">
                     <div className="opacity-50 text-black text-base font-bold">
                       Sold for
@@ -104,8 +102,8 @@ const CommunityHomeLiveDataBoard = ({
           <div className="flex-wrap grow shrink self-stretch justify-start items-start gap-lg inline-flex">
             <div className="min-w-[350px] max-h-[300px] flex-1 self-stretch p-md bg-white justify-center rounded-xl border border-slate flex-col justify-start items-start gap-lg inline-flex">
               <div className="xl:max-w-[300px] self-stretch text-lg font-bold">
-                Ξ{formatEthValue(liveData?.balance || 0)} treasury
-                to fund your projects and ideas
+                Ξ{formatEthValue(liveData?.balance || 0)} treasury to fund your
+                projects and ideas
               </div>
               <div className="flex-1 self-stretch p-md bg-[#FFC925] rounded-2xl border border-black justify-center items-center gap-lg inline-flex">
                 <div className="w-20 h-20 relative">
