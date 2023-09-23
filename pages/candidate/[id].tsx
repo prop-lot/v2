@@ -78,6 +78,7 @@ const CandidateIndexPage = ({
   votes: any;
 }) => {
   console.log(proposalCandidate);
+
   const { address } = useAccount();
 
   const [_title, ...description] =
@@ -144,9 +145,12 @@ const CandidateIndexPage = ({
               <section className="col-span-1 flex flex-col space-y-4">
                 <CandidateProposalProgress candidate={proposalCandidate} />
                 <CandidateConsensusVote
+                  candidate={proposalCandidate}
                   votes={votes}
-                  isOpenToFeedback={true}
+                  // pretty sure this will always be true on proplot unless we are showing candidate view to real proposals
+                  // can only give feedback to a candidate or a proposal that is UPDATABLE
                   // isOpenToFeedback={proposalCandidate.proposalIdToUpdate && originalProposal?.status !== ProposalState.UPDATABLE ? false : true;}
+                  isOpenToFeedback={true}
                 />
                 <CandidateSponsors candidate={proposalCandidate} />
               </section>

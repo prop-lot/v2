@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 import BlankModal from "@/components/BlankModal";
 import { RadioGroup } from "@headlessui/react";
+import { useContractWrite, useContractRead } from "wagmi";
+import { contracts } from "../lib/nouns/contracts";
+import { abi as NounsDAODataABI } from "../lib/nouns/abis/NounsDAOData";
 
 const voteOptions = [
   { name: "For", value: "1" },
@@ -9,22 +12,54 @@ const voteOptions = [
   { name: "Abstain", value: "2" },
 ];
 
-//  isFeedbackClosed={isUpdateToProposal && !isParentProposalUpdatable}
 const CandidateConsensusVote = ({
+  candidate,
   votes,
   isOpenToFeedback,
 }: {
+  candidate: any;
   votes: any;
   isOpenToFeedback: boolean;
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const account = useAccount();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [vote, setVote] = useState(voteOptions[1]);
+  const [reason, setReason] = useState<string>("");
 
-  const totalVotes =
-    votes.for.length + votes.against.length + votes.abstain.length;
-  const forPercentage = (votes.for.length / totalVotes) * 100 || 0;
-  const againstPercentage = (votes.against.length / totalVotes) * 100 || 0;
-  const abstainPercentage = (votes.abstain.length / totalVotes) * 100 || 0;
+  const forVotes = votes.for.reduce((acc: number, vote: any) => {
+    return acc + vote.votes;
+  }, 0);
+  const againstVotes = votes.against.reduce((acc: number, vote: any) => {
+    return acc + vote.votes;
+  }, 0);
+  const abstainVotes = votes.abstain.reduce((acc: number, vote: any) => {
+    return acc + vote.votes;
+  }, 0);
+  const totalVotes = forVotes + againstVotes + abstainVotes;
+
+  const forPercentage = (forVotes / totalVotes) * 100 || 0;
+  const againstPercentage = (againstVotes / totalVotes) * 100 || 0;
+  const abstainPercentage = (abstainVotes / totalVotes) * 100 || 0;
+
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    chainId: 5,
+    address: contracts[5].nounsDAOData as `0x${string}`,
+    abi: NounsDAODataABI,
+    functionName: "sendCandidateFeedback",
+    // address - proposer
+    // string - slug
+    // number - support
+    // string - reason
+    args: [candidate.proposer, candidate.slug, parseInt(vote.value), reason],
+  });
+
+  const submitFeedback = () => {
+    write?.();
+    // probably want to await it, then close modal and clear form
+    setIsOpen(false);
+    setVote(voteOptions[1]);
+    setReason("");
+  };
 
   return (
     <>
@@ -59,10 +94,19 @@ const CandidateConsensusVote = ({
           <textarea
             className="w-full rounded-lg bg-gray-100 text-gray-500 text-sm py-[10px] px-[16px]"
             placeholder="Provide feedback (optional)"
+            value={reason}
+            onChange={(e) => {
+              setReason(e.target.value);
+            }}
           ></textarea>
         </div>
         <div className="flex flex-row space-x-4 mt-[16px]">
-          <button className="w-full rounded-lg bg-gray-100 text-gray-500 text-sm py-[10px]">
+          <button
+            className="w-full rounded-lg bg-gray-100 text-gray-500 text-sm py-[10px]"
+            onClick={() => {
+              submitFeedback();
+            }}
+          >
             Submit vote
           </button>
         </div>
@@ -96,15 +140,15 @@ const CandidateConsensusVote = ({
         <section className="flex flex-row space-x-4 mt-[8px]">
           <div className="flex flex-col">
             <span className="font-bold text-sm">For</span>
-            <span className="text-green-500">{votes.for.length}</span>
+            <span className="text-green-500">{forVotes}</span>
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-sm">Against</span>
-            <span className="text-red-500">{votes.against.length}</span>
+            <span className="text-red-500">{againstVotes}</span>
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-sm">Abstain</span>
-            <span className="text-gray-500">{votes.abstain.length}</span>
+            <span className="text-gray-500">{abstainVotes}</span>
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-sm">Consensus</span>
@@ -119,9 +163,12 @@ const CandidateConsensusVote = ({
         >
           Provide consensus vote
         </button>
-        <p className="text-gray-500 mt-[16px] text-sm">
-          Connect wallet to vote
-        </p>
+
+        {!account && (
+          <p className="text-gray-500 mt-[16px] text-sm">
+            Connect wallet to vote
+          </p>
+        )}
       </div>
     </>
   );
