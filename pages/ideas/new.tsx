@@ -643,7 +643,7 @@ function ImageUploader({
 
   return (
     <div
-      className="flex flex-col max-w-full h-[200px] justify-center items-center px-md rounded-md !border-dashed border border-grey bg-white"
+      className="flex flex-col max-w-full h-[320px] justify-center items-center px-md rounded-md !border-dashed border border-grey bg-white aspect-w-16 aspect-h-9 overflow-hidden"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -652,15 +652,15 @@ function ImageUploader({
           <img
             src={previewUrl}
             alt="Selected"
-            className="object-cover w-full h-full rounded-md"
+            className="object-contain w-full h-full rounded-md"
           />
           <button
             type="button"
-            className="absolute top-0 right-0 p-1 bg-grey bg-opacity-50 rounded-full"
+            className="absolute top-[16px] !right-[0px] p-md bg-black bg-opacity-50 rounded-lg"
             onClick={removeImage}
           >
             <Image
-              src="/bin-icon.svg"
+              src="/bin.svg"
               alt="Remove image"
               width="16"
               height="16"
