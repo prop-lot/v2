@@ -78,14 +78,14 @@ const IdeaPage = ({
   const { address } = useAccount();
 
   const [getIdeaCommentsQuery, { data: commentData }] =
-  useLazyQuery<getIdeaComments>(GET_IDEA_COMMENTS, {
-    context: {
-      clientName: "PropLot",
-      headers: {
-        "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
+    useLazyQuery<getIdeaComments>(GET_IDEA_COMMENTS, {
+      context: {
+        clientName: "PropLot",
+        headers: {
+          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
       },
-    },
-  });
+    });
 
   const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
     DELEGATED_VOTES_BY_OWNER_SUB,
@@ -125,8 +125,9 @@ const IdeaPage = ({
   const creatorTokenWeight = data.getIdea.votes?.find(
     (vote) => vote.voterId === data.getIdea?.creatorId
   )?.voterWeight;
-  const commentCount = commentData?.getIdeaComments?.filter((c: any) => !c.deleted)
-  ?.length;
+  const commentCount = commentData?.getIdeaComments?.filter(
+    (c: any) => !c.deleted
+  )?.length;
 
   return (
     <Container fluid={"lg"} className="mt-xl mb-xl">
@@ -142,7 +143,7 @@ const IdeaPage = ({
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 className="w-[24px] h-[24px] mr-sm cursor-pointer"
-                >
+              >
                 <path
                   fillRule="evenodd"
                   d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-4.28 9.22a.75.75 0 000 1.06l3 3a.75.75 0 101.06-1.06l-1.72-1.72h5.69a.75.75 0 000-1.5h-5.69l1.72-1.72a.75.75 0 00-1.06-1.06l-3 3z"
@@ -152,7 +153,21 @@ const IdeaPage = ({
 
               <span className="text-lg lodrina">Back</span>
             </Link>
+          </Row>
 
+          {data.getIdea.headerImage && (
+            <div className="flex flex-row w-full h-[320px] justify-center items-center flex-shrink-0 rounded-lg border border-[#A9B9CC] aspect-w-16 overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className="object-cover w-full h-full rounded-lg"
+                  alt="Header image"
+                  data-twic-src={`image:${data.getIdea.headerImage}`}
+                  src={`${process.env.NEXT_PUBLIC_TWIC_PICS_DOMAIN}/${data.getIdea.headerImage}?twic=v1/output=preview`}
+                /> 
+            </div>
+          )}
+
+          <Row>
             <div className="flex flex-col mb-lg">
               <div className="flex flex-row justify-between items-center">
                 <h1 className="mb-0 lodrina text-xxl self-end">
@@ -221,10 +236,7 @@ const IdeaPage = ({
 
           <div className="mt-sm mb-sm">
             <h3 className="text-xl lodrina font-bold">
-              {commentCount}{" "}
-              {commentCount === 1
-                ? "comment"
-                : "comments"}
+              {commentCount} {commentCount === 1 ? "comment" : "comments"}
             </h3>
           </div>
 

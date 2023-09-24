@@ -16,7 +16,7 @@ import { DEFAULT_HOMEPAGE_MATCH } from ".";
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
 const walletconnectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROEJCT_ID;
-const twicpicsDomain = process.env.TWIC_PICS_DOMAIN;
+const twicpicsDomain = process.env.NEXT_PUBLIC_TWIC_PICS_DOMAIN;
 
 const client = createClient(
   getDefaultClient({
