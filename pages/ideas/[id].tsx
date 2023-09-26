@@ -10,14 +10,10 @@ import {
   getIdea,
   getIdea_getIdea,
 } from "@/graphql/types/__generated__/getIdea";
-import { getIdeaComments } from "@/graphql/types/__generated__/getIdeaComments";
 import { useLazyQuery, ApolloQueryResult } from "@apollo/client";
 import { GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
-import { GET_IDEA_COMMENTS } from "@/graphql/queries/commentsQuery";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import IdeaVoteControls from "@/components/IdeaVoteControls";
-import Comment from "@/components/Comment";
-import CommentInput from "@/components/CommentInput";
 import Link from "next/link";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import { GetServerSidePropsContext } from "next";
