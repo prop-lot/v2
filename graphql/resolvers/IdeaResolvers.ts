@@ -152,6 +152,8 @@ const resolvers: IResolvers = {
           description: args.options.description,
           tldr: args.options.tldr,
           tags: (args.options.tags as TagType[]) || [],
+          expiryOption: args.options.expiryOption,
+          headerImage: args.options.headerImage,
           communityId: context.communityId,
           totalSupply,
           currentBlock,
@@ -187,6 +189,7 @@ const resolvers: IResolvers = {
       return comments;
     },
     ideaStats: (root) => root._count,
+    headerImage: (root) => root.images?.[0]?.url,
   },
 };
 

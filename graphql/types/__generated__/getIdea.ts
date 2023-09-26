@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TagType } from "./globalTypes";
+import { IdeaExpiryOption, TagType } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: getIdea
@@ -45,6 +45,9 @@ export interface getIdea_getIdea {
   votecount: number;
   createdAt: any;
   deleted: boolean;
+  expiryDate: any;
+  expiryOption: IdeaExpiryOption;
+  headerImage: string | null;
   ideaStats: getIdea_getIdea_ideaStats | null;
   closed: boolean;
   consensus: number | null;

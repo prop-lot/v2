@@ -1,7 +1,18 @@
-import { Idea, TagType } from "@prisma/client";
+import { Idea, IdeaExpiryOption, TagType } from "@prisma/client";
+import AWS from "aws-sdk";
 import prisma from "@/lib/prisma";
 import { DATE_FILTERS, getIsClosed } from "../graphql/utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
+import moment from "moment";
+import { v4 as uuidv4 } from "uuid";
+
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
+
+const s3 = new AWS.S3();
 
 const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
@@ -124,6 +135,21 @@ class IdeasService {
     try {
       const dateRange: any = DATE_FILTERS[date || "ALL_TIME"].filterFn();
       const profileFilters: any = PROFILE_TAB_FILTERS[tab || "DEFAULT"](wallet);
+      let hasVirtualTag = false;
+      let nonVirtualTags = [];
+
+      // Check if any of the tags are virtual tags, if there are no virtual tags we can apply tag filtering
+      // directly at the query level. If there are virtual tags we need to load all ideas and then filter them
+      // in the app logic.
+      if (tags) {
+        tags.forEach((tag) => {
+          if (VirtualTags[tag]) {
+            hasVirtualTag = true;
+          } else {
+            nonVirtualTags.push(tag);
+          }
+        });
+      }
 
       const ideas = await prisma.idea.findMany({
         where: {
@@ -134,6 +160,16 @@ class IdeasService {
           },
           ...profileFilters,
           communityId: communityId,
+          ...(nonVirtualTags.length > 0 &&
+            !hasVirtualTag && {
+              tags: {
+                some: {
+                  type: {
+                    in: nonVirtualTags,
+                  },
+                },
+              },
+            }),
         },
         include: {
           tags: true,
@@ -148,7 +184,12 @@ class IdeasService {
             },
           },
         },
-        ...(isHomePage && { take: 5 }),
+        ...(isHomePage && {
+          take: 5,
+          orderBy: {
+            createdAt: "desc",
+          },
+        }),
       });
 
       const ideaData = ideas
@@ -160,7 +201,7 @@ class IdeasService {
           return { ...idea, votecount, consensus, closed };
         })
         .filter((idea: any) => {
-          if (!tags || tags.length === 0) {
+          if (!tags || tags.length === 0 || !hasVirtualTag) {
             return true;
           }
           return tags.some((tag) => {
@@ -187,6 +228,9 @@ class IdeasService {
         },
         include: {
           tags: true,
+          images: {
+            take: 1,
+          },
           votes: {
             include: {
               voter: true,
@@ -221,8 +265,19 @@ class IdeasService {
   }
 
   static async createIdea(
-    data: { title: string; tldr: string; description: string; tags: TagType[], communityId: string; totalSupply: number; currentBlock: number; authorTokenCount: number; },
-    user?: { wallet: string },
+    data: {
+      title: string;
+      tldr: string;
+      description: string;
+      tags: TagType[];
+      expiryOption: IdeaExpiryOption;
+      headerImage?: any;
+      communityId: string;
+      totalSupply: number;
+      currentBlock: number;
+      authorTokenCount: number;
+    },
+    user?: { wallet: string }
   ) {
     try {
       if (!user) {
@@ -231,6 +286,21 @@ class IdeasService {
 
       if (!data.communityId) {
         throw new Error("Failed to save idea: missing community ID");
+      }
+
+      let expiryDate;
+      switch (data.expiryOption) {
+        case IdeaExpiryOption.SEVEN_DAYS:
+          expiryDate = moment().utc().add(7, "days").toDate();
+          break;
+        case IdeaExpiryOption.FOURTEEN_DAYS:
+          expiryDate = moment().utc().add(14, "days").toDate();
+          break;
+        case IdeaExpiryOption.TWENTY_EIGHT_DAYS:
+          expiryDate = moment().utc().add(28, "days").toDate();
+          break;
+        default:
+          throw new Error("Failed to save idea: invalid expiry option");
       }
 
       const idea = await prisma.idea.create({
@@ -242,6 +312,8 @@ class IdeasService {
           creatorId: user.wallet,
           tokenSupplyOnCreate: data.totalSupply,
           createdAtBlock: data.currentBlock,
+          expiryOption: data.expiryOption,
+          expiryDate,
           votes: {
             create: {
               direction: 1,
@@ -249,6 +321,13 @@ class IdeasService {
               voterWeight: data.authorTokenCount,
             },
           },
+          ...(data.headerImage && {
+            images: {
+              create: {
+                url: data.headerImage,
+              },
+            },
+          }),
           tags: {
             connect: data.tags.map((tag) => {
               return {
@@ -265,7 +344,11 @@ class IdeasService {
     }
   }
 
-  static async voteOnIdea(data: any, getUserVoteWeightAtBlock: any, user?: { wallet: string }) {
+  static async voteOnIdea(
+    data: any,
+    getUserVoteWeightAtBlock: any,
+    user?: { wallet: string }
+  ) {
     try {
       if (!user) {
         throw new Error("Failed to save vote: missing user details");
@@ -277,7 +360,6 @@ class IdeasService {
         // votes can only be 1 or -1 right now as we only support up or down votes
         throw new Error("Failed to save vote: direction is not valid");
       }
-
 
       const idea = await prisma.idea.findUnique({
         where: {
@@ -293,7 +375,7 @@ class IdeasService {
         throw new Error("Idea has been deleted");
       }
 
-      const isClosed = getIsClosed(idea)
+      const isClosed = getIsClosed(idea);
 
       if (isClosed) {
         throw new Error("Idea has been closed");
@@ -312,7 +394,10 @@ class IdeasService {
       // let currentUserVotes = undefined;
 
       if (!existingVote) {
-        userDelegatedVotesAtBlock = await getUserVoteWeightAtBlock(user.wallet, idea?.createdAtBlock);
+        userDelegatedVotesAtBlock = await getUserVoteWeightAtBlock(
+          user.wallet,
+          idea?.createdAtBlock
+        );
 
         if (userDelegatedVotesAtBlock === 0) {
           throw new Error("NO_VOTES_AT_BLOCK");
@@ -325,7 +410,7 @@ class IdeasService {
 
       // On vote change we could check the users token count to see if it's changed i.e
       // if they've bought more or sold tokens. This means their vote weight will be accurate
-      // while the idea is open. If we don't do this someone may sell their tokens and still be 
+      // while the idea is open. If we don't do this someone may sell their tokens and still be
       // able to alter their votes until the idea is closed.
       // Might be overkill so leaving commented out for now.
 

@@ -13,6 +13,8 @@ export const GET_PROPLOT_QUERY = gql`
           votecount
           createdAt
           deleted
+          expiryDate
+          expiryOption
           ideaStats {
             comments
           }
