@@ -13,18 +13,19 @@ const Navbar = () => {
   useEffect(() => {
     const handleAccountsChanged = async () => {
       await logout();
-    }
+    };
 
+    // @ts-ignore
     if (!!window.ethereum) {
       //@ts-ignore
-      window.ethereum?.on('accountsChanged', handleAccountsChanged)
+      window.ethereum?.on("accountsChanged", handleAccountsChanged);
     }
 
     return () => {
       //@ts-ignore
-      window.ethereum?.removeListener('accountsChanged', handleAccountsChanged)
-    }
-  }, [logout]) // eslint-disable-line
+      window.ethereum?.removeListener("accountsChanged", handleAccountsChanged);
+    };
+  }, [logout]); // eslint-disable-line
 
   // Logout when a user disconnects their wallet from the connectKit provider
   useEffect(() => {
@@ -42,7 +43,7 @@ const Navbar = () => {
             alt="PropLot logo, which is a car noun with text spelling prop lot."
             width="140"
             height="120"
-            onClick={() => Router.push('/')}
+            onClick={() => Router.push("/")}
             className="cursor-pointer"
           />
           <ConnectKitButton />
