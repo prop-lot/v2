@@ -413,7 +413,6 @@ const PropLotUserProfile = ({
                         idea={listItem}
                         nounBalance={delegatedTokens}
                         disableControls={isAccountOwner}
-                        communityName={community.data.name}
                         refetch={() =>
                           refetch({
                             options: {

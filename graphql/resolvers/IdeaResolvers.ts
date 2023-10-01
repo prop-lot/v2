@@ -42,7 +42,9 @@ const resolvers: IResolvers = {
       _parent: any,
       args: QueryGetIdeaCommentsArgs
     ): Promise<Comment[]> => {
-      const comments: Comment[] = await IdeasService.getIdeaComments(args.options.ideaId as string);
+      const comments: Comment[] = await IdeasService.getIdeaComments(
+        args.options.ideaId as string
+      );
       return comments;
     },
   },
