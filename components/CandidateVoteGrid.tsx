@@ -42,18 +42,18 @@ const CandidateVoteGrid = ({ votes }: { votes: any }) => {
       <div className="container-lg mx-auto">
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-1">
-            {votes.for.map((vote: any) => (
-              <CandidateVoteCard feedback={vote} />
+            {votes.for.map((vote: any, index: number) => (
+              <CandidateVoteCard feedback={vote} key={`for-${index}`} />
             ))}
           </div>
           <div className="col-span-1">
-            {votes.against.map((vote: any) => (
-              <CandidateVoteCard feedback={vote} />
+            {votes.against.map((vote: any, index: number) => (
+              <CandidateVoteCard feedback={vote} key={`against-${index}`} />
             ))}
           </div>
           <div className="col-span-1">
-            {votes.abstain.map((vote: any) => (
-              <CandidateVoteCard feedback={vote} />
+            {votes.abstain.map((vote: any, index: number) => (
+              <CandidateVoteCard feedback={vote} key={`ab-${index}`} />
             ))}
           </div>
         </div>
