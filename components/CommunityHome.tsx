@@ -1,6 +1,6 @@
 import Router from "next/router";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { v4 } from "uuid";
 import { useAccount } from "wagmi";
 import { useLazyQuery, useQuery } from "@apollo/client";
@@ -11,8 +11,6 @@ import IdeaRow from "@/components/IdeaRow";
 import EmptyState from "@/components/EmptyState";
 import FAQAccordion from "@/components/FAQAccordion";
 import CommunityHomeLiveDataBoard from "@/components/CommunityHomeLiveDataBoard";
-import { Community } from "@prisma/client";
-import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import { getPropLot } from "@/graphql/types/__generated__/getPropLot";
 import Link from "next/link";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
@@ -69,11 +67,7 @@ const TagButtons = ({ tags }: { tags: getTags_tags[] }) => (
   </div>
 );
 
-export default function CommunityHome({
-  community,
-}: {
-  community: Community & { data: { name: string; pfpUrl: string } };
-}) {
+export default function CommunityHome() {
   const { address } = useAccount();
 
   const { data: tagsResponse } = useQuery<getTags>(GET_TAGS, {
@@ -98,7 +92,7 @@ export default function CommunityHome({
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
-        clientName: community?.uname as SUPPORTED_SUBDOMAINS,
+        clientName: "nouns",
       },
     }
   );
@@ -206,9 +200,7 @@ export default function CommunityHome({
           </button>
         </div>
       </section>
-
-      <CommunityHomeLiveDataBoard community={community} />
-
+      <CommunityHomeLiveDataBoard />
       <section className="!font-ptRootUI flex flex-1 justify-center px-[20px] xl:px-0 py-[72px] gap-8">
         <FAQAccordion />
       </section>
