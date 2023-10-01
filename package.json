@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "printenv && prisma generate && prisma migrate deploy && next build",
+    "build": "prisma migrate deploy && next build",
     "start": "next start -p 8080",
     "lint": "next lint",
     "generate-server-graph": "graphql-codegen --config codegen.yml",
