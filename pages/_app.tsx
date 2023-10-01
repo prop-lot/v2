@@ -44,10 +44,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <ConnectKitProvider options={{ initialChainId: 0 }}>
             <AuthProvider>
               <ErrorModalProvider>
-                {/* temporarily commenting this out while fixing ts errors bc I don't know what its for -mg */}
-                {/* {pageProps?.communityName !== DEFAULT_HOMEPAGE_MATCH && (
-                  <NavBar />
-                )} */}
+                <NavBar />
                 <Component {...pageProps} />
               </ErrorModalProvider>
             </AuthProvider>
