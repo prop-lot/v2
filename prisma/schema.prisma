@@ -30,6 +30,15 @@ model Image {
   updatedAt   DateTime  @updatedAt
 }
 
+model Candidate {
+  id                    String    @id @default(uuid())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  slug                  String    @unique
+  ideaId                String
+  idea                  Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+}
+
 model Idea {
   id                    String    @id @default(uuid())
   createdAt             DateTime  @default(now())
@@ -50,6 +59,7 @@ model Idea {
   images                Image[]
   expiryOption          IdeaExpiryOption
   expiryDate            DateTime  @default(now())
+  candidates            Candidate[]
 
   @@index([creatorId])
   @@index([communityId])
