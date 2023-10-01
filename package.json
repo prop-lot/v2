@@ -7,12 +7,11 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate deploy && next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start -p 8080",
     "lint": "next lint",
     "generate-server-graph": "graphql-codegen --config codegen.yml",
-    "generate-client-graph": "npx apollo codegen:generate --localSchemaFile=./graphql/schemas/schema.graphql ./graphql/types/__generated__/ --outputFlat --globalTypesFile=./graphql/types/__generated__/globalTypes.ts --includes=./graphql/queries/**/*.ts --target=typescript --tagName=gql",
-    "postinstall": "prisma generate"
+    "generate-client-graph": "npx apollo codegen:generate --localSchemaFile=./graphql/schemas/schema.graphql ./graphql/types/__generated__/ --outputFlat --globalTypesFile=./graphql/types/__generated__/globalTypes.ts --includes=./graphql/queries/**/*.ts --target=typescript --tagName=gql"
   },
   "dependencies": {
     "@apollo/client": "^3.7.4",
