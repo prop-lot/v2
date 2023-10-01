@@ -1,4 +1,4 @@
-import { Col, Row, Button, Spinner } from "react-bootstrap";
+import { Col, Row, Spinner } from "react-bootstrap";
 import { v4 } from "uuid";
 import { Alert } from "react-bootstrap";
 import { useEffect, useState } from "react";
@@ -201,7 +201,7 @@ const PropLotUserProfile = ({
         },
       });
     }
-  }, [id]);
+  }, [id, getPropLotProfileQuery, getTokenBalances]);
 
   /*
     Filters that are applied to the current response.

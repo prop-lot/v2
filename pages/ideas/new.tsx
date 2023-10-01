@@ -274,24 +274,21 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                 }
 
                 if (image) {
-                  const fileName = image.name.trim().replace(/\s+/g, '-');
+                  const fileName = image.name.trim().replace(/\s+/g, "-");
                   const fileType = image.type;
 
                   // Attempt to get the presigned URL
                   try {
-                    const response = await fetch(
-                      "/api/idea-image-upload",
-                      {
-                        method: "POST",
-                        body: JSON.stringify({
-                          fileName,
-                          fileType,
-                        }),
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                      }
-                    );
+                    const response = await fetch("/api/idea-image-upload", {
+                      method: "POST",
+                      body: JSON.stringify({
+                        fileName,
+                        fileType,
+                      }),
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    });
 
                     presignedPostData = await response.json();
                   } catch (err) {
@@ -327,7 +324,9 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                       description,
                       tags,
                       expiryOption: selectedExpiryOption,
-                      ...(image ? {headerImage: presignedPostData.fields.key} : {}),
+                      ...(image
+                        ? { headerImage: presignedPostData.fields.key }
+                        : {}),
                     },
                   },
                 });
@@ -649,22 +648,19 @@ function ImageUploader({
     >
       {selectedImage ? (
         <div className="relative w-full h-full">
-          <img
-            src={previewUrl}
+          <Image
+            src={previewUrl as string}
             alt="Selected"
             className="object-contain w-full h-full rounded-md"
+            height="16"
+            width="16"
           />
           <button
             type="button"
             className="absolute top-[16px] !right-[0px] p-md bg-black bg-opacity-50 rounded-lg"
             onClick={removeImage}
           >
-            <Image
-              src="/bin.svg"
-              alt="Remove image"
-              width="16"
-              height="16"
-            />
+            <Image src="/bin.svg" alt="Remove image" width="16" height="16" />
           </button>
         </div>
       ) : (

@@ -1,24 +1,32 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import { useEnsName, useAccount } from "wagmi";
 import { useMutation } from "@apollo/client";
 import { useAuth } from "@/hooks/useAuth";
 
-import { useShortAddress } from '@/utils/addressAndENSDisplayUtils';
-import { getPropLotProfile_propLotProfile_list_Comment as Comment } from '@/graphql/types/__generated__/getPropLotProfile';
+import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
+import { getPropLotProfile_propLotProfile_list_Comment as Comment } from "@/graphql/types/__generated__/getPropLotProfile";
 import { DELETE_IDEA_COMMENT_MUTATION } from "@/graphql/queries/propLotMutations";
 import { deleteIdeaComment } from "@/graphql/types/__generated__/deleteIdeaComment";
 
-import Card from 'react-bootstrap/Card';
-import moment from 'moment';
+import Card from "react-bootstrap/Card";
+import moment from "moment";
 
-import { useLazyQuery } from '@apollo/client';
-import { BigNumber } from 'ethers';
-import { TOKEN_BALANCES_BY_OWNER_SUB } from '@/graphql/subgraph';
-import { StandaloneNounCircular } from '@/components/NounCircular';
-import { SUPPORTED_SUBDOMAINS } from '@/utils/supportedTokenUtils';
-import { useApiError } from '@/hooks/useApiError';
+import { useLazyQuery } from "@apollo/client";
+import { BigNumber } from "ethers";
+import { TOKEN_BALANCES_BY_OWNER_SUB } from "@/graphql/subgraph";
+import { StandaloneNounCircular } from "@/components/NounCircular";
+import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
+import { useApiError } from "@/hooks/useApiError";
 
-const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comment; refetch: () => void; communityName: SUPPORTED_SUBDOMAINS; }) => {
+const ProfileCommentRow = ({
+  comment,
+  refetch,
+  communityName,
+}: {
+  comment: Comment;
+  refetch: () => void;
+  communityName: SUPPORTED_SUBDOMAINS;
+}) => {
   const { idea, parent, parentId, createdAt, body, deleted } = comment;
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
@@ -27,7 +35,7 @@ const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comme
     address: wallet as `0x${string}`,
     cacheTime: 6_000,
   });
-  const shortAddress = useShortAddress(wallet || '');
+  const shortAddress = useShortAddress(wallet || "");
   const { address: account } = useAccount();
 
   const [getTokenBalances, { data: tokenBalanceData }] = useLazyQuery(
@@ -36,27 +44,31 @@ const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comme
       context: {
         clientName: communityName,
       },
-    },
+    }
   );
 
-  const [deleteCommentMutation, { error }] =
-  useMutation<deleteIdeaComment>(DELETE_IDEA_COMMENT_MUTATION, {
-    onCompleted() {
-      refetch();
+  const [deleteCommentMutation, { error }] = useMutation<deleteIdeaComment>(
+    DELETE_IDEA_COMMENT_MUTATION,
+    {
+      onCompleted() {
+        refetch();
+      },
     }
-  });
+  );
 
   const getDeleteCommentMutationArgs = () => ({
     context: {},
     variables: {
-      id: comment.id
+      id: comment.id,
     },
   });
 
-
   useEffect(() => {
     if (error && !errorModalVisible) {
-      setError({ message: error?.message || "Failed to delete comment", status: 500 });
+      setError({
+        message: error?.message || "Failed to delete comment",
+        status: 500,
+      });
     }
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -86,13 +98,15 @@ const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comme
         },
       });
     }
-  }, [parent]);
+  }, [parent, getTokenBalances]);
 
   const tokenData = tokenBalanceData?.account?.tokens || [];
 
   const renderCommentCard = () => {
     const content = deleted ? (
-      <div className="bg-gray-100 rounded p-4">This comment cannot be found.</div>
+      <div className="bg-gray-100 rounded p-4">
+        This comment cannot be found.
+      </div>
     ) : (
       <Card className="border border-[#E2E3E8] !rounded-[16px] box-border bg-white">
         <Card.Header className="bg-white font-semibold text-dark-grey text-[12px] !rounded-[16px] !border-0">
@@ -121,7 +135,7 @@ const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comme
             {body}
           </Card.Text>
           <Card.Text className="font-semibold text-[12px] text-dark-grey !mb-[0px] !p-[0px]">
-            {moment(createdAt).format('MMM Do YYYY')}
+            {moment(createdAt).format("MMM Do YYYY")}
             {comment.authorId === account && (
               <span
                 className="text-red-500 cursor-pointer ml-2"
