@@ -136,7 +136,7 @@ class IdeasService {
       const dateRange: any = DATE_FILTERS[date || "ALL_TIME"].filterFn();
       const profileFilters: any = PROFILE_TAB_FILTERS[tab || "DEFAULT"](wallet);
       let hasVirtualTag = false;
-      let nonVirtualTags = [];
+      let nonVirtualTags = [] as any[];
 
       // Check if any of the tags are virtual tags, if there are no virtual tags we can apply tag filtering
       // directly at the query level. If there are virtual tags we need to load all ideas and then filter them
@@ -220,7 +220,7 @@ class IdeasService {
     }
   }
 
-  static async get(id: number, communityId: string) {
+  static async get(id: string, communityId: string) {
     try {
       const idea = await prisma.idea.findUnique({
         where: {

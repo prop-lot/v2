@@ -27,12 +27,15 @@ const CommentInput = ({
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
 
-  const [submitCommentMutation] = useMutation<submitIdeaComment>(SUBMIT_COMMENT_MUTATION, {
-    context: {
-      clientName: "PropLot",
-    },
-    refetchQueries: ["getIdeaComments"],
-  });
+  const [submitCommentMutation] = useMutation<submitIdeaComment>(
+    SUBMIT_COMMENT_MUTATION,
+    {
+      context: {
+        clientName: "PropLot",
+      },
+      refetchQueries: ["getIdeaComments"],
+    }
+  );
 
   const getCommentMutationArgs = (
     ideaId: string,
@@ -61,7 +64,11 @@ const CommentInput = ({
         const { success } = await triggerSignIn();
         if (success) {
           await submitCommentMutation(
-            getCommentMutationArgs(ideaId, body, parentId)
+            getCommentMutationArgs(
+              ideaId,
+              body,
+              parentId ? parseInt(parentId as string) : undefined
+            )
           );
         } else {
           setError({ message: "Failed to sign in", status: 401 });
@@ -72,7 +79,11 @@ const CommentInput = ({
       }
     } else {
       await submitCommentMutation(
-        getCommentMutationArgs(ideaId, body, parentId)
+        getCommentMutationArgs(
+          ideaId,
+          body,
+          parentId ? parseInt(parentId as string) : undefined
+        )
       );
     }
     setCommentValue("");
@@ -85,7 +96,7 @@ const CommentInput = ({
   }, []);
 
   if (!isMounted) {
-    return null
+    return null;
   }
 
   return (
