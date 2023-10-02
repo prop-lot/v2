@@ -3,6 +3,9 @@ import { useContractWrite, useContractRead } from "wagmi";
 import { abi as NounsDAODataABI } from "../lib/nouns/abis/NounsDAOData";
 import { useForm } from "react-hook-form";
 import { contracts } from "../lib/nouns/contracts";
+import { useRouter } from "next/router";
+import { SUBMIT_CANDIDATE_MUTATION } from "@/graphql/queries/propLotMutations";
+import { useMutation } from "@apollo/client";
 
 enum ProposalType {
   STREAM_FUNDS = "Stream funds",
@@ -111,6 +114,9 @@ const ProposalForm = ({
 };
 
 const CandidatePage = () => {
+  const router = useRouter();
+  const { ideaId } = router.query;
+
   const { data: proposalCost } = useContractRead({
     address: contracts[5].nounsDAOData as `0x${string}`,
     abi: NounsDAODataABI,
@@ -119,7 +125,7 @@ const CandidatePage = () => {
 
   const [proposalType, setProposalType] = useState<ProposalType>();
 
-  const { data, isLoading, isSuccess, write } = useContractWrite({
+  const { write } = useContractWrite({
     chainId: 5,
     address: contracts[5].nounsDAOData as `0x${string}`,
     abi: NounsDAODataABI,
@@ -130,12 +136,19 @@ const CandidatePage = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: any) => {
+  const [submitCanidateMutation, { error, loading, data: candidateData }] =
+    useMutation(SUBMIT_CANDIDATE_MUTATION, {
+      context: {
+        clientName: "PropLot",
+      },
+    });
+
+  const onSubmit = async (data: any) => {
     console.log(data);
+
     // const handleCreateProposal = async () => {
     //   await createProposalCandidate(
     //     proposalTransactions.map(({ address }) => address), // Targets
@@ -166,7 +179,20 @@ const CandidatePage = () => {
         BigInt(0),
       ],
     });
+
+    // should we await the above to only create in db if the real candidate is created?
+    await submitCanidateMutation({
+      variables: {
+        slug: data.title,
+        ideaId: ideaId,
+      },
+    });
   };
+
+  // todo... better error handling, or do this SSR and return 404 if no ideaId or ideaId doesn't exist
+  if (!ideaId) {
+    return <div>need an ideaId...</div>;
+  }
 
   return (
     <main

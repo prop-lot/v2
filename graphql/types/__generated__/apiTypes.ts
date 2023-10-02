@@ -134,6 +134,11 @@ export type MutationDeleteIdeaCommentArgs = {
 };
 
 
+export type MutationSubmitCandidateArgs = {
+  options: SubmitCandidateInputOptions;
+}
+
+
 export type MutationSubmitIdeaArgs = {
   options: SubmitIdeaInputOptions;
 };
@@ -254,6 +259,11 @@ export type SubmitCommentInputOptions = {
   ideaId: Scalars['String'];
   parentId?: InputMaybe<Scalars['Int']>;
 };
+
+export type SubmitCandidateInputOptions = {
+  ideaId: Scalars['String'];
+  slug: Scalars['String'];
+}
 
 export type SubmitIdeaInputOptions = {
   description: Scalars['String'];

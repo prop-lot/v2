@@ -1,5 +1,6 @@
 import { IResolvers } from "@graphql-tools/utils";
 import IdeaResolvers from "./resolvers/IdeaResolvers";
+import CandidateResolvers from "./resolvers/CandidateResolvers";
 import PropLotListResolvers from "./resolvers/PropLotListResolvers";
 import PropLotProfileListResolvers from "./resolvers/PropLotProfileListResolvers";
 import TagResolver from "./resolvers/TagResolver";
@@ -15,6 +16,7 @@ const customScalarResolver = {
 const resolverMap: IResolvers = mergeDeep([
   customScalarResolver,
   IdeaResolvers,
+  CandidateResolvers,
   UserResolvers,
   PropLotListResolvers,
   PropLotProfileListResolvers,

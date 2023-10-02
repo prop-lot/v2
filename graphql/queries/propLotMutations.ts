@@ -23,6 +23,14 @@ export const SUBMIT_IDEA_MUTATION = gql`
   }
 `;
 
+export const SUBMIT_CANDIDATE_MUTATION = gql`
+  mutation submitCandidate($options: SubmitCandidateInputOptions!) {
+    submitCandidate(options: $options) {
+      id
+    }
+  }
+`;
+
 export const SUBMIT_COMMENT_MUTATION = gql`
   mutation submitIdeaComment($options: SubmitCommentInputOptions!) {
     submitIdeaComment(options: $options) {

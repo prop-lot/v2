@@ -16,6 +16,7 @@ type Query {
 type Mutation {
   submitIdeaVote(options: SubmitVoteInputOptions!): Vote!
   submitIdea(options: SubmitIdeaInputOptions!): Idea!
+  submitCandidate(options: SubmitCandidateInputOptions!): Candidate!
   submitIdeaComment(options: SubmitCommentInputOptions!): Comment!
   deleteIdeaComment(id: String!): Comment!
   deleteIdea(id: String!): DeleteDataResponse!
@@ -37,6 +38,11 @@ input IdeaCommentInputOptions {
 
 input SubmitVoteInputOptions {
   direction: Int!
+  ideaId: String!
+}
+
+input SubmitCandidateInputOptions {
+  slug: String!
   ideaId: String!
 }
 
@@ -208,6 +214,15 @@ type Idea {
   expiryDate: Date!
   expiryOption: IdeaExpiryOption!
   headerImage: String
+}
+
+type Candidate {
+  id: String!
+  slug: String!
+  ideaId: String!
+  idea: Idea
+  createdAt: Date!
+  deleted: Boolean!
 }
 
 # Enums
