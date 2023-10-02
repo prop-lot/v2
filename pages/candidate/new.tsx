@@ -18,6 +18,23 @@ enum ProposalType {
   FUNCTION_CALL = "Function call",
 }
 
+// transfer means we are sending funds
+// TODO: add support for sending STETH or USDC
+const processTransfer = (data: any, slug: string) => {
+  return [
+    [data.recipient],
+    [BigInt(data.amount)],
+    [""],
+    ["0x"],
+    `# ${data.title}\n\n${data.description}`,
+    slug,
+    BigInt(0),
+  ];
+};
+
+const processStream = (data: any, slug: string) => {};
+const processFunctionCall = (data: any, slug: string) => {};
+
 const TransferFundsProposalForm = ({ register }: { register: any }) => {
   return (
     <div>
@@ -53,6 +70,11 @@ const TransferFundsProposalForm = ({ register }: { register: any }) => {
           className="border rounded-lg p-2"
         />
       </div>
+      <input
+        type="hidden"
+        {...register("type")}
+        value={ProposalType.TRANSFER_FUNDS}
+      />
     </div>
   );
 };
@@ -86,6 +108,11 @@ const StreamFundsProposalForm = ({ register }: { register: any }) => {
             className="border rounded-lg p-2"
           />
         </div>
+        <input
+          type="hidden"
+          {...register("type")}
+          value={ProposalType.STREAM_FUNDS}
+        />
       </div>
     </div>
   );
@@ -95,6 +122,11 @@ const FunctionCallProposalForm = ({ register }: { register: any }) => {
   return (
     <div>
       <h2 className="font-bold text-xl mb-4">Function Call</h2>
+      <input
+        type="hidden"
+        {...register("type")}
+        value={ProposalType.FUNCTION_CALL}
+      />
     </div>
   );
 };
@@ -152,6 +184,14 @@ const CandidatePage = () => {
 
   const onSubmit = async (data: any) => {
     console.log(data);
+    const slug = data.title
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^\w-]+/g, "");
+
+    if (data.type === ProposalType.TRANSFER_FUNDS) {
+      processTransfer(data, slug);
+    }
 
     // const handleCreateProposal = async () => {
     //   await createProposalCandidate(
@@ -166,23 +206,18 @@ const CandidatePage = () => {
     //   );
     // };
 
-    const slug = data.title
-      .toLowerCase()
-      .replace(/ /g, "-")
-      .replace(/[^\w-]+/g, "");
-
     // for eth transfer, recipient is address
-    write({
-      args: [
-        ["0xE7affDB964178261Df49B86BFdBA78E9d768Db6D"],
-        [BigInt(1000000000)],
-        [""],
-        ["0x"],
-        `# ${data.title}\n\n${data.description}`,
-        slug,
-        BigInt(0),
-      ],
-    });
+    // write({
+    //   args: [
+    //     ["0xE7affDB964178261Df49B86BFdBA78E9d768Db6D"],
+    //     [BigInt(1000000000)],
+    //     [""],
+    //     ["0x"],
+    //     `# ${data.title}\n\n${data.description}`,
+    //     slug,
+    //     BigInt(0),
+    //   ],
+    // });
   };
 
   // example hash for testing

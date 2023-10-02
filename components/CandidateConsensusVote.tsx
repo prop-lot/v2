@@ -76,11 +76,29 @@ const CandidateConsensusVote = ({
                 value={option}
                 className={({ active, checked }) =>
                   `cursor-pointer focus:outline-none
-                    ${active ? "ring-2 ring-indigo-600 ring-offset-2" : ""}
+                    ${active ? "ring-2 ring-offset-2" : ""}
+                    ${active && option.value === "1" ? "ring-green" : ""}
+                    ${active && option.value === "0" ? "ring-red-500" : ""}
+                    ${active && option.value === "2" ? "ring-gray-500" : ""}
                     ${
                       checked
-                        ? "bg-indigo-600 text-white hover:bg-indigo-500"
+                        ? "text-white "
                         : "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                    }
+                    ${
+                      checked && option.value === "1"
+                        ? "bg-green hover:bg-green/90"
+                        : ""
+                    }
+                    ${
+                      checked && option.value === "0"
+                        ? "bg-red-500 hover:bg-red-500/90"
+                        : ""
+                    }
+                    ${
+                      checked && option.value === "2"
+                        ? "bg-gray-500 hover:bg-gray-500/90"
+                        : ""
                     }
                     "flex items-center justify-center rounded-md py-2 px-3 text-sm sm:flex-1 text-center`
                 }
@@ -116,7 +134,7 @@ const CandidateConsensusVote = ({
         <section className="flex flex-row space-x-2">
           <div
             className={`h-3 rounded-full ${
-              totalVotes > 0 ? "bg-green-600" : "bg-gray-300"
+              totalVotes > 0 ? "bg-green" : "bg-gray-300"
             }`}
             style={{ width: `${totalVotes > 0 ? forPercentage || 1 : 33}%` }}
           ></div>
@@ -140,7 +158,7 @@ const CandidateConsensusVote = ({
         <section className="flex flex-row space-x-4 mt-[8px]">
           <div className="flex flex-col">
             <span className="font-bold text-sm">For</span>
-            <span className="text-green-500">{forVotes}</span>
+            <span className="text-green">{forVotes}</span>
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-sm">Against</span>
