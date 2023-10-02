@@ -1,7 +1,7 @@
 import Router from "next/router";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
-import { Row, Container, Col, Button } from "react-bootstrap";
+import { Row, Container, Col } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
 import { useAccount } from "wagmi";
@@ -18,11 +18,9 @@ import { submitIdea } from "@/graphql/types/__generated__/submitIdea";
 import { useApiError } from "@/hooks/useApiError";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
-import { GetServerSidePropsContext } from "next";
 import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
-import getCommunityByDomain from "@/utils/communityByDomain";
 import { GET_TAGS } from "@/graphql/queries/tagsQuery";
 
 enum FORM_VALIDATION {
@@ -700,18 +698,10 @@ function ImageUploader({
   );
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { communityDomain } = getCommunityByDomain(context.req);
-
-  if (!communityDomain) {
-    return {
-      notFound: true,
-    };
-  }
-
+export async function getServerSideProps() {
   const community = await prisma.community.findFirst({
     where: {
-      uname: communityDomain,
+      uname: "nouns",
     },
   });
 

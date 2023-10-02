@@ -21,7 +21,6 @@ import { GetServerSidePropsContext } from "next";
 import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
-import getCommunityByDomain from "@/utils/communityByDomain";
 import { client } from "@/lib/apollo";
 
 const renderer = new marked.Renderer();
@@ -157,13 +156,13 @@ const IdeaPage = ({
 
           {data.getIdea.headerImage && (
             <div className="flex flex-row w-full h-[320px] justify-center items-center flex-shrink-0 rounded-lg border border-[#A9B9CC] aspect-w-16 overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  className="object-cover w-full h-full rounded-lg"
-                  alt="Header image"
-                  data-twic-src={`image:${data.getIdea.headerImage}`}
-                  src={`${process.env.NEXT_PUBLIC_TWIC_PICS_DOMAIN}/${data.getIdea.headerImage}?twic=v1/output=preview`}
-                /> 
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="object-cover w-full h-full rounded-lg"
+                alt="Header image"
+                data-twic-src={`image:${data.getIdea.headerImage}`}
+                src={`${process.env.NEXT_PUBLIC_TWIC_PICS_DOMAIN}/${data.getIdea.headerImage}?twic=v1/output=preview`}
+              />
             </div>
           )}
 
@@ -269,17 +268,9 @@ const IdeaPage = ({
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { communityDomain } = getCommunityByDomain(context.req);
-
-  if (!communityDomain) {
-    return {
-      notFound: true,
-    };
-  }
-
   const community = await prisma.community.findFirst({
     where: {
-      uname: communityDomain,
+      uname: "nouns",
     },
   });
 
@@ -307,7 +298,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         clientName: "PropLot",
         uri,
         headers: {
-          "proplot-cd": communityDomain, // Used for local dev as this query doesn't run on the subdomain
+          "proplot-cd": "nouns", // Used for local dev as this query doesn't run on the subdomain
           "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
           Cookie: context.req.headers.cookie || "",
         },
