@@ -1,18 +1,8 @@
 import { Idea, IdeaExpiryOption, TagType } from "@prisma/client";
-import AWS from "aws-sdk";
 import prisma from "@/lib/prisma";
 import { DATE_FILTERS, getIsClosed } from "../graphql/utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
 import moment from "moment";
-import { v4 as uuidv4 } from "uuid";
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
-
-const s3 = new AWS.S3();
 
 const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
@@ -136,7 +126,7 @@ class IdeasService {
       const dateRange: any = DATE_FILTERS[date || "ALL_TIME"].filterFn();
       const profileFilters: any = PROFILE_TAB_FILTERS[tab || "DEFAULT"](wallet);
       let hasVirtualTag = false;
-      let nonVirtualTags = [] as any[];
+      let nonVirtualTags: TagType[] = [];
 
       // Check if any of the tags are virtual tags, if there are no virtual tags we can apply tag filtering
       // directly at the query level. If there are virtual tags we need to load all ideas and then filter them
