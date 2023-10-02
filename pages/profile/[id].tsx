@@ -4,7 +4,6 @@ import { Alert } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { GetServerSidePropsContext } from "next";
 import { BigNumber } from "ethers";
 import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
@@ -25,7 +24,6 @@ import { StandaloneNounCircular } from "@/components/NounCircular";
 
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
-import getCommunityByDomain from "@/utils/communityByDomain";
 import useSyncURLParams from "@/hooks/useSyncURLParams";
 
 // import Davatar from '@davatar/react';
@@ -467,18 +465,10 @@ const PropLotUserProfile = ({
   );
 };
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { communityDomain } = getCommunityByDomain(context.req);
-
-  if (!communityDomain) {
-    return {
-      notFound: true,
-    };
-  }
-
+export async function getServerSideProps() {
   const community = await prisma.community.findFirst({
     where: {
-      uname: communityDomain,
+      uname: "nouns",
     },
   });
 
