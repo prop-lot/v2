@@ -5,12 +5,28 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import { abi as NounsDAODataABI } from "../../lib/nouns/abis/NounsDAOData";
+import { abi as payerABI } from "../../lib/nouns/abis/Payer";
 import { useForm } from "react-hook-form";
 import { contracts } from "../../lib/nouns/contracts";
 import { useRouter } from "next/router";
 import { SUBMIT_CANDIDATE_MUTATION } from "@/graphql/queries/propLotMutations";
 import { useMutation } from "@apollo/client";
 import { decodeEventLog } from "viem";
+import { utils } from "ethers";
+import FunctionCallProposalForm from "../../components/candidate/FunctionCallProposalForm";
+import StreamFundsProposalForm from "../../components/candidate/StreamFundsProposalForm";
+import TransferFundsProposalForm from "../../components/candidate/TransferFundsProposalForm";
+
+export type CandidateTransaction = {
+  address: string;
+  value: string;
+  signature: string;
+  calldata: string;
+  decodedCalldata?: string;
+  usdcValue?: number;
+};
+
+// https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-webapp/src/components/ProposalActionsModal/steps/TransferFundsReviewStep/index.tsx#L56
 
 enum ProposalType {
   STREAM_FUNDS = "Stream funds",
@@ -19,117 +35,57 @@ enum ProposalType {
 }
 
 // transfer means we are sending funds
-// TODO: add support for sending STETH or USDC
 const processTransfer = (data: any, slug: string) => {
-  return [
-    [data.recipient],
-    [BigInt(data.amount)],
-    [""],
-    ["0x"],
-    `# ${data.title}\n\n${data.description}`,
-    slug,
-    BigInt(0),
-  ];
+  if (data.currency === "ETH") {
+    return [
+      [data.recipient],
+      // probably need to parseEther this as well
+      [BigInt(data.amount)],
+      [""],
+      ["0x"],
+      `# ${data.title}\n\n${data.description}`,
+      slug,
+      BigInt(0),
+    ];
+  } else if (data.currency === "USDC") {
+    const signature = "sendOrRegisterDebt(address,uint256)";
+    const abi = new utils.Interface(payerABI);
+
+    return [
+      ["0x"], // payerContract address
+      [BigInt(0)],
+      [signature],
+      [
+        abi?._encodeParams(abi?.functions[signature]?.inputs, [
+          data.recipient,
+          Math.round(parseFloat(data.amount ?? "0") * 1_000_000).toString(),
+        ]),
+      ],
+      `# ${data.title}\n\n${data.description}`,
+      slug,
+      BigInt(0),
+    ];
+  } else if (data.currency === "STETH") {
+    const values = [
+      data.recipient,
+      utils.parseEther((data.amount ?? 0).toString()).toString(),
+    ];
+
+    return [
+      ["0x"], // STETH contract address
+      [BigInt(0)],
+      ["transfer(address,uint256)"],
+      [utils.defaultAbiCoder.encode(["address", "uint256"], values)],
+      `# ${data.title}\n\n${data.description}`,
+      slug,
+      BigInt(0),
+    ];
+  }
 };
 
 const processStream = (data: any, slug: string) => {};
+
 const processFunctionCall = (data: any, slug: string) => {};
-
-const TransferFundsProposalForm = ({ register }: { register: any }) => {
-  return (
-    <div>
-      <h2 className="font-bold text-xl mb-4">Transfer Funds</h2>
-      <div className="flex flex-col my-4">
-        <div className="flex justify-between w-full items-center">
-          <label className="font-bold mb-2">Currency</label>
-        </div>
-        {/* might be better if select option values are the contract address */}
-        <select {...register("currency")} className="w-full border rounded p-2">
-          <option value="USDC">USDC</option>
-          <option value="ETH">ETH</option>
-          <option value="STETH">Lido Staked ETH</option>
-        </select>
-      </div>
-      <div className="flex flex-col my-4">
-        <div className="flex justify-between w-full items-center">
-          <label className="font-bold mb-2">Recipient</label>
-        </div>
-        <input
-          {...register("recipient")}
-          type="text"
-          className="border rounded-lg p-2"
-        />
-      </div>
-      <div className="flex flex-col my-4">
-        <div className="flex justify-between w-full items-center">
-          <label className="font-bold mb-2">Amount</label>
-        </div>
-        <input
-          {...register("amount")}
-          type="text"
-          className="border rounded-lg p-2"
-        />
-      </div>
-      <input
-        type="hidden"
-        {...register("type")}
-        value={ProposalType.TRANSFER_FUNDS}
-      />
-    </div>
-  );
-};
-
-const StreamFundsProposalForm = ({ register }: { register: any }) => {
-  return (
-    <div>
-      <div>
-        <h2 className="font-bold text-xl mb-4">Stream Funds</h2>
-        <select {...register("currency")} className="w-full border rounded p-2">
-          <option value="ETH">WETH</option>
-          <option value="USDC">USDC</option>
-        </select>
-        <div className="flex flex-col my-4">
-          <div className="flex justify-between w-full items-center">
-            <label className="font-bold mb-2">Recipient</label>
-          </div>
-          <input
-            {...register("recipient")}
-            type="text"
-            className="border rounded-lg p-2"
-          />
-        </div>
-        <div className="flex flex-col my-4">
-          <div className="flex justify-between w-full items-center">
-            <label className="font-bold mb-2">Amount</label>
-          </div>
-          <input
-            {...register("amount")}
-            type="text"
-            className="border rounded-lg p-2"
-          />
-        </div>
-        <input
-          type="hidden"
-          {...register("type")}
-          value={ProposalType.STREAM_FUNDS}
-        />
-      </div>
-    </div>
-  );
-};
-
-const FunctionCallProposalForm = ({ register }: { register: any }) => {
-  return (
-    <div>
-      <h2 className="font-bold text-xl mb-4">Function Call</h2>
-      <input
-        type="hidden"
-        {...register("type")}
-        value={ProposalType.FUNCTION_CALL}
-      />
-    </div>
-  );
-};
 
 const ProposalForm = ({
   proposalType,
@@ -269,7 +225,7 @@ const CandidatePage = () => {
         backgroundSize: "100% auto",
       }}
     >
-      <div className="max-w-screen-md mx-auto bg-white py-12">
+      <div className="max-w-screen-md mx-auto bg-white py-12 px-4">
         <form onSubmit={handleSubmit(onSubmit)}>
           <h1 className="text-black text-[36px] font-bold">New Proposal</h1>
           <p className="mt-4">
