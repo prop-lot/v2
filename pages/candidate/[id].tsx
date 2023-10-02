@@ -167,7 +167,7 @@ const CandidateIndexPage = ({
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { id } = context.query;
+  const { id } = context.query as { id: string };
 
   try {
     const response = await fetch(
@@ -181,7 +181,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         body: JSON.stringify({
           query: QUERY,
           variables: {
-            id: id,
+            id: id.toLowerCase(),
           },
         }),
       }

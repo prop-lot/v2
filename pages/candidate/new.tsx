@@ -1,11 +1,16 @@
 import { useState } from "react";
-import { useContractWrite, useContractRead } from "wagmi";
-import { abi as NounsDAODataABI } from "../lib/nouns/abis/NounsDAOData";
+import {
+  useContractWrite,
+  useContractRead,
+  useWaitForTransaction,
+} from "wagmi";
+import { abi as NounsDAODataABI } from "../../lib/nouns/abis/NounsDAOData";
 import { useForm } from "react-hook-form";
-import { contracts } from "../lib/nouns/contracts";
+import { contracts } from "../../lib/nouns/contracts";
 import { useRouter } from "next/router";
 import { SUBMIT_CANDIDATE_MUTATION } from "@/graphql/queries/propLotMutations";
 import { useMutation } from "@apollo/client";
+import { decodeEventLog } from "viem";
 
 enum ProposalType {
   STREAM_FUNDS = "Stream funds",
@@ -125,7 +130,7 @@ const CandidatePage = () => {
 
   const [proposalType, setProposalType] = useState<ProposalType>();
 
-  const { write } = useContractWrite({
+  const { data: writeData, write } = useContractWrite({
     chainId: 5,
     address: contracts[5].nounsDAOData as `0x${string}`,
     abi: NounsDAODataABI,
@@ -139,12 +144,11 @@ const CandidatePage = () => {
     formState: { errors },
   } = useForm();
 
-  const [submitCanidateMutation, { error, loading, data: candidateData }] =
-    useMutation(SUBMIT_CANDIDATE_MUTATION, {
-      context: {
-        clientName: "PropLot",
-      },
-    });
+  const [submitCanidateMutation] = useMutation(SUBMIT_CANDIDATE_MUTATION, {
+    context: {
+      clientName: "PropLot",
+    },
+  });
 
   const onSubmit = async (data: any) => {
     console.log(data);
@@ -179,15 +183,39 @@ const CandidatePage = () => {
         BigInt(0),
       ],
     });
-
-    // should we await the above to only create in db if the real candidate is created?
-    await submitCanidateMutation({
-      variables: {
-        slug: data.title,
-        ideaId: ideaId,
-      },
-    });
   };
+
+  // example hash for testing
+  // "0xb44428a13cad95d99f5fe53aa17f43290037e711e073483a86684636dfa10397"
+  useWaitForTransaction({
+    chainId: 5,
+    hash: writeData?.hash,
+    confirmations: 2,
+    onSuccess: async (data) => {
+      const event = decodeEventLog({
+        abi: NounsDAODataABI,
+        data: data.logs[0].data,
+        topics: data.logs[0].topics,
+      });
+
+      // @ts-ignore
+      const sender = event.args.msgSender;
+      // @ts-ignore
+      const slug = event.args.slug;
+      const dbSlug = `${sender}-${slug}`;
+
+      await submitCanidateMutation({
+        variables: {
+          options: {
+            slug: dbSlug,
+            ideaId,
+          },
+        },
+      });
+
+      router.push(`/candidate/${dbSlug}`);
+    },
+  });
 
   // todo... better error handling, or do this SSR and return 404 if no ideaId or ideaId doesn't exist
   if (!ideaId) {
