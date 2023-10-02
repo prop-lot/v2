@@ -1,6 +1,9 @@
+import prisma from "@/lib/prisma";
+
 import { IResolvers } from "@graphql-tools/utils";
 import { IdeaTags } from "@/graphql/types/__generated__/apiTypes";
 import { Tag } from "@prisma/client";
+
 
 const resolvers: IResolvers = {
   Query: {
