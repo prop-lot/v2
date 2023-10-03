@@ -1,11 +1,8 @@
 import Router from "next/router";
 import Image from "next/image";
 import { useEffect } from "react";
-import { v4 } from "uuid";
 import { useAccount } from "wagmi";
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { GET_TAGS } from "@/graphql/queries/tagsQuery";
-import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
+import { useLazyQuery } from "@apollo/client";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
 import EmptyState from "@/components/EmptyState";
@@ -15,8 +12,6 @@ import { getPropLot } from "@/graphql/types/__generated__/getPropLot";
 import Link from "next/link";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import { getTags, getTags_tags } from "@/graphql/types/__generated__/getTags";
-
-const PROPLOT_HOME_FILTER = "PROPLOT_HOME";
 
 const TagButtons = ({ tags }: { tags: getTags_tags[] }) => (
   <div className="grid grid-cols-3 gap-lg md:grid-cols-4">
@@ -67,26 +62,8 @@ const TagButtons = ({ tags }: { tags: getTags_tags[] }) => (
   </div>
 );
 
-export default function CommunityHome() {
+export default function CommunityHome({ tagsData, proplotListData }: { tagsData: getTags, proplotListData: getPropLot}) {
   const { address } = useAccount();
-
-  const { data: tagsResponse } = useQuery<getTags>(GET_TAGS, {
-    context: {
-      clientName: "PropLot",
-    },
-  });
-
-  const [getPropLotQuery, { data, refetch, error }] = useLazyQuery<getPropLot>(
-    GET_PROPLOT_QUERY,
-    {
-      context: {
-        clientName: "PropLot",
-        headers: {
-          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-      },
-    }
-  );
 
   const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
     DELEGATED_VOTES_BY_OWNER_SUB,
@@ -107,19 +84,9 @@ export default function CommunityHome() {
     }
   }, [address, getDelegatedVotes]);
 
-  useEffect(() => {
-    getPropLotQuery({
-      variables: {
-        options: {
-          requestUUID: v4(),
-          filters: [PROPLOT_HOME_FILTER],
-        },
-      },
-    });
-  }, [getPropLotQuery]);
-
   const handleRefresh = () => {
-    refetch({ options: { requestUUID: v4(), filters: [PROPLOT_HOME_FILTER] } });
+    // Implement refetching proplot query if we want to enable vote controls on this view
+    // refetch({ options: { requestUUID: v4(), filters: [PROPLOT_HOME_FILTER] } });
   };
 
   const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0;
@@ -159,17 +126,18 @@ export default function CommunityHome() {
         <div className="text-black text-xxl font-londrina text-center">
           What ideas are you looking for?
         </div>
-        {tagsResponse && (tagsResponse?.tags || []).length > 0 && (
-          <TagButtons tags={tagsResponse.tags as getTags_tags[]} />
+        {tagsData && (tagsData?.tags || []).length > 0 && (
+          <TagButtons tags={tagsData.tags as getTags_tags[]} />
         )}
         <div className="gap-lg flex flex-row flex-wrap items-center w-full overflow-x-scroll scrollbar-hide">
-          {data?.propLot?.list?.map((listItem: any, idx: number) => {
+          {proplotListData?.propLot?.list?.map((listItem: any, idx: number) => {
             if (listItem.__typename === "Idea") {
               return (
                 <IdeaRow
                   key={listItem.id}
                   idea={listItem}
                   nounBalance={nounBalance}
+                  disableControls={true}
                   refetch={() => {
                     handleRefresh();
                   }}
@@ -179,13 +147,10 @@ export default function CommunityHome() {
 
             return null;
           })}
-          {data?.propLot?.list?.length === 0 && (
+          {proplotListData?.propLot?.list?.length === 0 && (
             <EmptyState
               appliedFilters={[]}
-              error={error}
-              clearFilters={() => {
-                refetch({ options: { requestUUID: v4(), filters: [] } });
-              }}
+              clearFilters={() => undefined}
             />
           )}
         </div>

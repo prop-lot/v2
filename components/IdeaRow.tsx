@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import moment from "moment";
 import { useAccount, useEnsName } from "wagmi";
 import { createBreakpoint } from "react-use";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
@@ -54,6 +53,7 @@ const IdeaRow = ({
   disableControls?: boolean;
   refetch: () => void;
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
   const { address: account } = useAccount();
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
@@ -113,6 +113,10 @@ const IdeaRow = ({
       });
     }
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, [])
 
   const { daysLeft, hoursLeft } = getTimeToClose(idea);
 
@@ -203,13 +207,15 @@ const IdeaRow = ({
                   )}
                 </div>
                 <div className="flex-col justify-center items-center gap-xs inline-flex">
-                  <IdeaVoteControls
-                    idea={idea}
-                    nounBalance={nounBalance}
-                    withAvatars={!isMobile}
-                    refetchPropLotOnVote
-                    disableControls={disableControls}
-                  />
+                  {isMounted && (
+                    <IdeaVoteControls
+                      idea={idea}
+                      nounBalance={nounBalance}
+                      withAvatars={!isMobile}
+                      refetchPropLotOnVote
+                      disableControls={disableControls}
+                    />
+                  )}
                 </div>
               </div>
             </div>

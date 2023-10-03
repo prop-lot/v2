@@ -7,7 +7,7 @@ const EmptyState = ({
   clearFilters,
 }: {
   appliedFilters: string[];
-  error: any;
+  error?: any;
   clearFilters: () => void;
 }) => {
   const router = useRouter();
