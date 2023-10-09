@@ -233,9 +233,9 @@ const ProposalForm = ({
 };
 
 const CandidatePage = ({ idea }: { idea: any }) => {
-  console.log(idea);
   const router = useRouter();
   const { ideaId } = router.query;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { data: proposalCost } = useContractRead({
     address: contracts[5].nounsDAOData as `0x${string}`,
@@ -269,7 +269,7 @@ const CandidatePage = ({ idea }: { idea: any }) => {
   });
 
   const onSubmit = async (data: any) => {
-    console.log(data);
+    setIsLoading(true);
     const slug = data.title
       .toLowerCase()
       .replace(/ /g, "-")
@@ -290,8 +290,6 @@ const CandidatePage = ({ idea }: { idea: any }) => {
     });
   };
 
-  // example hash for testing
-  // "0xb44428a13cad95d99f5fe53aa17f43290037e711e073483a86684636dfa10397"
   useWaitForTransaction({
     chainId: 5,
     hash: writeData?.hash,
@@ -318,6 +316,7 @@ const CandidatePage = ({ idea }: { idea: any }) => {
         },
       });
 
+      setIsLoading(false);
       router.push(`/candidate/${dbSlug}`);
     },
   });
@@ -431,10 +430,10 @@ const CandidatePage = ({ idea }: { idea: any }) => {
           </section>
           {/* TODO: add disabled state to button */}
           <button
-            className="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg mt-4"
+            className="px-4 py-2 bg-green text-white rounded-lg mt-4"
             type="submit"
           >
-            Submit Proposal
+            {isLoading ? "Loading..." : "Submit Proposal"}
           </button>
           <span className="text-gray-400 text-sm mt-4 block">
             To prevent spam, a payment of 0.01 ETH is required to submit
