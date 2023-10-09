@@ -67,7 +67,8 @@ const ProfileLink = ({ id }: { id: string }) => {
 
 export const IdeaCard = ({ idea }: { idea: getIdea_getIdea }) => {
   const { address } = useAccount();
-
+  const router = useRouter();
+  const { id } = router.query as { id: string };
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -116,7 +117,7 @@ export const IdeaCard = ({ idea }: { idea: getIdea_getIdea }) => {
         <button
           className={`${buttonClass} !border-grey border-[1px] !text-sm !rounded-[10px] !font-inter !font-bold !pt-sm !pb-sm !pl-md !pr-md self-center w-full`}
           onClick={() => {
-            // Take to candidate prop page
+            router.push(`/candidate/new?ideaId=${idea.id}`);
           }}
         >
           Submit a proposal
@@ -142,7 +143,13 @@ export const IdeaCard = ({ idea }: { idea: getIdea_getIdea }) => {
   );
 };
 
-export const VotingCard = ({ idea, tokenBalance }: { idea: getIdea_getIdea; tokenBalance: number; }) => {
+export const VotingCard = ({
+  idea,
+  tokenBalance,
+}: {
+  idea: getIdea_getIdea;
+  tokenBalance: number;
+}) => {
   const { address } = useAccount();
 
   const [isClient, setIsClient] = useState(false);
@@ -236,7 +243,7 @@ const IdeaPage = ({
           <Row>
             <Link
               className="cursor-pointer text-dark-grey flex flex-row mb-sm items-center"
-              href="/"
+              href="/ideas"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

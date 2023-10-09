@@ -24,6 +24,12 @@ import { formatTokenAmount } from "../../utils/formatTokenAmount";
 import { getTokenAddressForCurrency } from "../../utils/getTokenAddressForCurrency";
 import { SupportedCurrency } from "../../lib/types";
 import config from "../../lib/config";
+import { GetServerSidePropsContext } from "next";
+import { ApolloQueryResult } from "@apollo/client";
+import { GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
+import { getIdea } from "@/graphql/types/__generated__/getIdea";
+import { client } from "@/lib/apollo";
+import Link from "next/link";
 
 export type CandidateTransaction = {
   address: string;
@@ -226,7 +232,8 @@ const ProposalForm = ({
   }
 };
 
-const CandidatePage = () => {
+const CandidatePage = ({ idea }: { idea: any }) => {
+  console.log(idea);
   const router = useRouter();
   const { ideaId } = router.query;
 
@@ -236,7 +243,9 @@ const CandidatePage = () => {
     functionName: "createCandidateCost",
   });
 
-  const [proposalType, setProposalType] = useState<ProposalType>();
+  const [proposalType, setProposalType] = useState<ProposalType>(
+    ProposalType.TRANSFER_FUNDS
+  );
 
   const { data: writeData, write } = useContractWrite({
     chainId: 5,
@@ -340,13 +349,21 @@ const CandidatePage = () => {
           </p>
           <p className="mt-4">
             This is a proposal to{" "}
-            <a href="#" target="_blank" className="text-green">
-              Nouner name
+            <a
+              href="#"
+              target="_blank"
+              className="text-green hover:text-green/80"
+            >
+              {idea.creatorId}
+              {"'"}s
             </a>{" "}
-            idea{" "}
-            <a href="#" target="_blank" className="text-green">
-              Idea name
-            </a>
+            idea,{" "}
+            <Link
+              href={`/ideas/${idea.id}`}
+              className="text-green hover:text-green/80"
+            >
+              {idea.title}
+            </Link>
             .
           </p>
           <h3 className="mt-4 font-bold text-xl">Proposal Details</h3>
@@ -429,5 +446,44 @@ const CandidatePage = () => {
     </main>
   );
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  try {
+    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+    const host = context.req.headers.host;
+    // We set a different uri locally as routing to subdomains here doesn't work unless you add 127.0.0.1 lilnouns.localhost to your /etc/hosts
+    // we could add that as a requirement to the readme but this also works.
+    const uri =
+      process.env.NODE_ENV === "development"
+        ? `http://localhost:3000/api/graphql`
+        : `${protocol}://${host}/api/graphql`;
+
+    const ideaData: ApolloQueryResult<getIdea> = await client.query({
+      query: GET_IDEA_QUERY,
+      variables: { ideaId: context.query.ideaId },
+      fetchPolicy: "no-cache",
+      context: {
+        clientName: "PropLot",
+        uri,
+        headers: {
+          "proplot-cd": "nouns", // Used for local dev as this query doesn't run on the subdomain
+          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
+          Cookie: context.req.headers.cookie || "",
+        },
+      },
+    });
+
+    return {
+      props: {
+        idea: ideaData.data.getIdea,
+      },
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      notFound: true,
+    };
+  }
+}
 
 export default CandidatePage;
