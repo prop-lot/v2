@@ -1,4 +1,8 @@
+import { useEffect } from "react";
 import { useAccount } from "wagmi";
+import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
+import { useLazyQuery } from "@apollo/client";
+import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 
 const CandidateSponsorCard = ({ sponsorship }: { sponsorship: any }) => {
   return (
@@ -39,7 +43,29 @@ const PfpOrFallback = ({ src, alt }: { src?: string; alt?: string }) => {
 };
 
 const CandidateSponsors = ({ candidate }: { candidate: any }) => {
+  const { address } = useAccount();
   const sponsors = candidate.latestVersion.content.contentSignatures || [];
+
+  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
+    DELEGATED_VOTES_BY_OWNER_SUB,
+    {
+      context: {
+        clientName: "nouns" as SUPPORTED_SUBDOMAINS,
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (address) {
+      getDelegatedVotes({
+        variables: {
+          id: address.toLowerCase(),
+        },
+      });
+    }
+  }, [address, getDelegatedVotes]);
+
+  console.log("gg", getDelegatedVotesData);
 
   return (
     <div className="p-[16px] border rounded">
@@ -68,12 +94,16 @@ const CandidateSponsors = ({ candidate }: { candidate: any }) => {
           </div>
         )}
       </section>
-      <button className="w-full rounded-lg bg-gray-100 text-gray-500 text-sm py-[10px] mt-[16px]">
-        Sponsor this proposal
-      </button>
-      <p className="text-gray-500 mt-[16px] text-sm">
-        Connect wallet to sponsor
-      </p>
+      {getDelegatedVotesData > 0 && (
+        <button className="w-full rounded-lg bg-gray-100 text-gray-500 text-sm py-[10px] mt-[16px]">
+          Sponsor this proposal
+        </button>
+      )}
+      {!address && (
+        <p className="text-gray-500 mt-[16px] text-sm">
+          Connect wallet to sponsor
+        </p>
+      )}
     </div>
   );
 };
