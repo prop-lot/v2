@@ -6,7 +6,13 @@ enum ProposalType {
   FUNCTION_CALL = "Function call",
 }
 
-const FunctionCallProposalForm = ({ register }: { register: any }) => {
+const FunctionCallProposalForm = ({
+  register,
+  setValue,
+}: {
+  register: any;
+  setValue: any;
+}) => {
   const [functions, setFunctions] = useState<any[]>([]);
   const [selectedFunction, setSelectedFunction] = useState<any>(null);
   const handleFileChange = (e: any) => {
@@ -15,6 +21,8 @@ const FunctionCallProposalForm = ({ register }: { register: any }) => {
     reader.onload = (e) => {
       const text = e.target?.result;
       const json = JSON.parse(text as string);
+
+      setValue("abi", JSON.stringify(json));
       parseABI(json);
     };
     reader.readAsText(file);
@@ -45,7 +53,7 @@ const FunctionCallProposalForm = ({ register }: { register: any }) => {
         </div>
         <input
           {...register("amount")}
-          type="text"
+          type="number"
           className="border rounded-lg p-2"
         />
       </div>
@@ -69,16 +77,16 @@ const FunctionCallProposalForm = ({ register }: { register: any }) => {
       {selectedFunction && (
         <div className="flex flex-col my-4">
           <label className="font-bold mb-2">Function arguments</label>
-          {selectedFunction?.inputs.map((input: any) => (
-            <>
+          {selectedFunction?.inputs.map((input: any, index: number) => (
+            <span key={`args-${index}`} className="flex flex-col">
               <label>{input.name}</label>
               <input
                 key={input.name}
-                {...register(input.name)}
+                {...register(`args.${index}`)}
                 type="text"
                 className="border rounded-lg p-2 my-2"
               />
-            </>
+            </span>
           ))}
           {selectedFunction?.inputs.length === 0 && (
             <div>No arguments for this function</div>

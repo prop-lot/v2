@@ -16,6 +16,7 @@ import { utils } from "ethers";
 import FunctionCallProposalForm from "../../components/candidate/FunctionCallProposalForm";
 import StreamFundsProposalForm from "../../components/candidate/StreamFundsProposalForm";
 import TransferFundsProposalForm from "../../components/candidate/TransferFundsProposalForm";
+import { encodeFunctionData } from "viem";
 
 export type CandidateTransaction = {
   address: string;
@@ -49,18 +50,21 @@ const processTransfer = (data: any, slug: string) => {
     ];
   } else if (data.currency === "USDC") {
     const signature = "sendOrRegisterDebt(address,uint256)";
-    const abi = new utils.Interface(payerABI);
+
+    const encodedData = encodeFunctionData({
+      abi: payerABI,
+      functionName: "sendOrRegisterDebt",
+      args: [
+        data.recipient,
+        BigInt(Math.round(parseFloat(data.amount ?? "0") * 1_000_000)),
+      ],
+    });
 
     return [
-      ["0x"], // payerContract address
+      ["0x"], // payerContract address... TODO: FIND OUT WHAT THIS IS
       [BigInt(0)],
       [signature],
-      [
-        abi?._encodeParams(abi?.functions[signature]?.inputs, [
-          data.recipient,
-          Math.round(parseFloat(data.amount ?? "0") * 1_000_000).toString(),
-        ]),
-      ],
+      [encodedData],
       `# ${data.title}\n\n${data.description}`,
       slug,
       BigInt(0),
@@ -85,14 +89,34 @@ const processTransfer = (data: any, slug: string) => {
 
 const processStream = (data: any, slug: string) => {};
 
-const processFunctionCall = (data: any, slug: string) => {};
+const processFunctionCall = (data: any, slug: string) => {
+  const abi = JSON.parse(data.abi);
+
+  const encodedData = encodeFunctionData({
+    abi: abi,
+    functionName: data.function,
+    args: data.args ?? [],
+  });
+
+  return [
+    [data.contractAddress],
+    [data.amount ? utils.parseEther(data.amount.toString()).toString() : "0"],
+    [data.function],
+    [encodedData],
+    `# ${data.title}\n\n${data.description}`,
+    slug,
+    BigInt(0),
+  ];
+};
 
 const ProposalForm = ({
   proposalType,
   register,
+  setValue,
 }: {
   proposalType: ProposalType;
   register: any;
+  setValue: any;
 }) => {
   switch (proposalType) {
     case ProposalType.STREAM_FUNDS:
@@ -100,7 +124,9 @@ const ProposalForm = ({
     case ProposalType.TRANSFER_FUNDS:
       return <TransferFundsProposalForm register={register} />;
     case ProposalType.FUNCTION_CALL:
-      return <FunctionCallProposalForm register={register} />;
+      return (
+        <FunctionCallProposalForm register={register} setValue={setValue} />
+      );
     default:
       return <></>;
   }
@@ -129,6 +155,7 @@ const CandidatePage = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
 
@@ -147,6 +174,8 @@ const CandidatePage = () => {
 
     if (data.type === ProposalType.TRANSFER_FUNDS) {
       processTransfer(data, slug);
+    } else if (data.type === ProposalType.FUNCTION_CALL) {
+      processFunctionCall(data, slug);
     }
 
     // const handleCreateProposal = async () => {
@@ -301,7 +330,11 @@ const CandidatePage = () => {
           </div>
           <section className="mt-4">
             {proposalType && (
-              <ProposalForm proposalType={proposalType} register={register} />
+              <ProposalForm
+                proposalType={proposalType}
+                register={register}
+                setValue={setValue}
+              />
             )}
           </section>
           {/* TODO: add disabled state to button */}
