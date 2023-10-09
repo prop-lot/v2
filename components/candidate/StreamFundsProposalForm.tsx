@@ -1,17 +1,16 @@
-enum ProposalType {
-  STREAM_FUNDS = "Stream funds",
-  TRANSFER_FUNDS = "Transfer funds",
-  FUNCTION_CALL = "Function call",
-}
+import { SupportedCurrency, ProposalType } from "../../lib/types";
 
 const StreamFundsProposalForm = ({ register }: { register: any }) => {
   return (
     <div>
       <div>
         <h2 className="font-bold text-xl mb-4">Stream Funds</h2>
+        <div className="flex justify-between w-full items-center">
+          <label className="font-bold mb-2">Currency</label>
+        </div>
         <select {...register("currency")} className="w-full border rounded p-2">
-          <option value="ETH">WETH</option>
-          <option value="USDC">USDC</option>
+          <option value={SupportedCurrency.WETH}>WETH</option>
+          <option value={SupportedCurrency.USDC}>USDC</option>
         </select>
         <div className="flex flex-col my-4">
           <div className="flex justify-between w-full items-center">
@@ -34,6 +33,27 @@ const StreamFundsProposalForm = ({ register }: { register: any }) => {
             className="border rounded-lg p-2"
           />
         </div>
+        <div className="flex flex-col my-4">
+          <div className="flex justify-between w-full items-center">
+            <label className="font-bold mb-2">Start</label>
+          </div>
+          <input
+            {...register("start")}
+            type="date"
+            className="border rounded-lg p-2"
+          />
+        </div>
+        <div className="flex flex-col my-4">
+          <div className="flex justify-between w-full items-center">
+            <label className="font-bold mb-2">End</label>
+          </div>
+          <input
+            {...register("end")}
+            type="date"
+            className="border rounded-lg p-2"
+          />
+        </div>
+
         <input
           type="hidden"
           {...register("type")}

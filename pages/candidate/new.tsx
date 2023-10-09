@@ -6,6 +6,7 @@ import {
 } from "wagmi";
 import { abi as NounsDAODataABI } from "../../lib/nouns/abis/NounsDAOData";
 import { abi as payerABI } from "../../lib/nouns/abis/Payer";
+import { abi as StreamFactoryABI } from "../../lib/nouns/abis/StreamFactory";
 import { useForm } from "react-hook-form";
 import { contracts } from "../../lib/nouns/contracts";
 import { useRouter } from "next/router";
@@ -17,6 +18,11 @@ import FunctionCallProposalForm from "../../components/candidate/FunctionCallPro
 import StreamFundsProposalForm from "../../components/candidate/StreamFundsProposalForm";
 import TransferFundsProposalForm from "../../components/candidate/TransferFundsProposalForm";
 import { encodeFunctionData } from "viem";
+import { publicClient } from "../../lib/viem/";
+import { formatTokenAmount } from "../../utils/formatTokenAmount";
+import { getTokenAddressForCurrency } from "../../utils/getTokenAddressForCurrency";
+import { SupportedCurrency } from "../../lib/types";
+import config from "../../lib/config";
 
 export type CandidateTransaction = {
   address: string;
@@ -85,9 +91,33 @@ const processTransfer = (data: any, slug: string) => {
       BigInt(0),
     ];
   }
+
+  // probably more of a throw scenario...
+  // implies that currency is not in our list
+  return [];
 };
 
-const processStream = (data: any, slug: string) => {};
+const processStream = async (data: any, slug: string) => {
+  const predictedStreamAddress = await publicClient("mainnet").readContract({
+    address: "" as `0x${string}`,
+    abi: StreamFactoryABI,
+    functionName: "predictStreamAddress",
+    args: [
+      config.addresses.nounsDaoExecutorProxy as `0x${string}`,
+      config.addresses.nounsDaoExecutorProxy as `0x${string}`,
+      data.recipient,
+      BigInt(formatTokenAmount(data.tokenAmount)),
+      getTokenAddressForCurrency(
+        data.currency as SupportedCurrency
+      ) as `0x${string}`,
+      data.start,
+      data.end,
+    ],
+  });
+
+  // https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-webapp/src/hooks/useStreamPaymentTransactions.ts#L22
+  return [];
+};
 
 const processFunctionCall = (data: any, slug: string) => {
   const abi = JSON.parse(data.abi);
@@ -172,37 +202,17 @@ const CandidatePage = () => {
       .replace(/ /g, "-")
       .replace(/[^\w-]+/g, "");
 
+    let candidateArgs = [] as any[];
     if (data.type === ProposalType.TRANSFER_FUNDS) {
-      processTransfer(data, slug);
+      candidateArgs = processTransfer(data, slug);
     } else if (data.type === ProposalType.FUNCTION_CALL) {
-      processFunctionCall(data, slug);
+      candidateArgs = processFunctionCall(data, slug);
     }
 
-    // const handleCreateProposal = async () => {
-    //   await createProposalCandidate(
-    //     proposalTransactions.map(({ address }) => address), // Targets
-    //     proposalTransactions.map(({ value }) => value ?? '0'), // Values
-    //     proposalTransactions.map(({ signature }) => signature), // Signatures
-    //     proposalTransactions.map(({ calldata }) => calldata), // Calldatas
-    //     `# ${titleValue}\n\n${bodyValue}`, // Description
-    //     slug, // Slug
-    //     0, // proposalIdToUpdate - use 0 for new proposals
-    //     { value: hasVotes ? 0 : createCandidateCost }, // Fee for non-nouners
-    //   );
-    // };
-
-    // for eth transfer, recipient is address
-    // write({
-    //   args: [
-    //     ["0xE7affDB964178261Df49B86BFdBA78E9d768Db6D"],
-    //     [BigInt(1000000000)],
-    //     [""],
-    //     ["0x"],
-    //     `# ${data.title}\n\n${data.description}`,
-    //     slug,
-    //     BigInt(0),
-    //   ],
-    // });
+    write({
+      // @ts-ignore
+      args: candidateArgs,
+    });
   };
 
   // example hash for testing
@@ -250,7 +260,6 @@ const CandidatePage = () => {
         position: "relative",
         backgroundImage: "url(/background-image.svg)",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
         backgroundSize: "100% auto",
       }}
     >
