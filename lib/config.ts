@@ -118,14 +118,16 @@ const externalAddresses: Record<SupportedChain, ExternalContractAddresses> = {
   },
 };
 
-const getContractAddressesForChainOrThrow = (
-  mapping: Record<
-    SupportedChain,
-    ExternalContractAddresses | NounsContractAddresses
-  >,
-  chainId: SupportedChain
-) => {
-  const addresses = mapping[chainId];
+const getNounsAddressesForChainOrThrow = (chainId: SupportedChain) => {
+  const addresses = nounsContractAddresses[chainId];
+  if (!addresses) {
+    throw new Error(`No addresses configured for chain ${chainId}`);
+  }
+  return addresses;
+};
+
+const getExternalAddressesForChainOrThrow = (chainId: SupportedChain) => {
+  const addresses = externalAddresses[chainId];
   if (!addresses) {
     throw new Error(`No addresses configured for chain ${chainId}`);
   }
@@ -133,15 +135,8 @@ const getContractAddressesForChainOrThrow = (
 };
 
 const getAddresses = () => {
-  const nounsAddresses = getContractAddressesForChainOrThrow(
-    nounsContractAddresses,
-    CHAIN_ID
-  );
-  const externalAddresses = getContractAddressesForChainOrThrow(
-    // @ts-ignore
-    externalAddresses,
-    CHAIN_ID
-  );
+  const nounsAddresses = getNounsAddressesForChainOrThrow(CHAIN_ID);
+  const externalAddresses = getExternalAddressesForChainOrThrow(CHAIN_ID);
   return {
     ...nounsAddresses,
     ...externalAddresses,

@@ -7,6 +7,7 @@ import {
 import { abi as NounsDAODataABI } from "../../lib/nouns/abis/NounsDAOData";
 import { abi as payerABI } from "../../lib/nouns/abis/Payer";
 import { abi as StreamFactoryABI } from "../../lib/nouns/abis/StreamFactory";
+import { abi as WethABI } from "../../lib/nouns/abis/Weth";
 import { useForm } from "react-hook-form";
 import { contracts } from "../../lib/nouns/contracts";
 import { useRouter } from "next/router";
@@ -115,8 +116,71 @@ const processStream = async (data: any, slug: string) => {
     ],
   });
 
-  // https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-webapp/src/hooks/useStreamPaymentTransactions.ts#L22
-  return [];
+  const encodedData = encodeFunctionData({
+    abi: StreamFactoryABI,
+    functionName: "createStream",
+    args: [
+      data.recipient,
+      BigInt(formatTokenAmount(data.tokenAmount)),
+      getTokenAddressForCurrency(
+        data.currency as SupportedCurrency
+      ) as `0x${string}`,
+      data.start,
+      data.end,
+      0,
+      predictedStreamAddress,
+    ],
+  });
+
+  const createStreamActions = [
+    [config.addresses.nounsStreamFactory], // address
+    [BigInt(0)],
+    ["createStream(address,uint256,address,uint256,uint256,uint8,address)"],
+    [encodedData],
+  ];
+
+  let followUpAction = [];
+  if (data.currency === SupportedCurrency.USDC) {
+    const encodedUSDCData = encodeFunctionData({
+      abi: payerABI,
+      functionName: "sendOrRegisterDebt",
+      args: [
+        data.recipient,
+        BigInt(Math.round(parseFloat(data.amount ?? "0") * 1_000_000)),
+      ],
+    });
+    followUpAction = [
+      [config.addresses.payerContract ?? ""],
+      [BigInt(0)],
+      ["sendOrRegisterDebt(address,uint256)"],
+      [encodedUSDCData],
+    ];
+  } else {
+    const encodedTransferWethData = encodeFunctionData({
+      abi: WethABI,
+      functionName: "transfer",
+      args: [
+        predictedStreamAddress,
+        BigInt(utils.parseEther(data.amount as string).toString()),
+      ],
+    });
+    followUpAction = [
+      [config.addresses.weth, config.addresses.weth],
+      [BigInt(utils.parseEther(data.amount.toString()).toString()), BigInt(0)],
+      ["deposit()", "transfer(address,uint256)"],
+      ["0x", encodedTransferWethData],
+    ];
+  }
+
+  return [
+    [...createStreamActions[0], ...followUpAction[0]],
+    [...createStreamActions[1], ...followUpAction[1]],
+    [...createStreamActions[2], ...followUpAction[2]],
+    [...createStreamActions[3], ...followUpAction[3]],
+    `# ${data.title}\n\n${data.description}`,
+    slug,
+    BigInt(0),
+  ];
 };
 
 const processFunctionCall = (data: any, slug: string) => {
@@ -207,6 +271,8 @@ const CandidatePage = () => {
       candidateArgs = processTransfer(data, slug);
     } else if (data.type === ProposalType.FUNCTION_CALL) {
       candidateArgs = processFunctionCall(data, slug);
+    } else if (data.type === ProposalType.STREAM_FUNDS) {
+      candidateArgs = await processStream(data, slug);
     }
 
     write({
