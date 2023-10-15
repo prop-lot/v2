@@ -11,7 +11,7 @@ const defaultLink = new HttpLink({
 });
 
 const nounsDAOLink = new HttpLink({
-  uri: 'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns/0.1.0/gn',
+  uri: 'https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns/prod/gn',
 });
 
 const lilNounsDAOLink = new HttpLink({

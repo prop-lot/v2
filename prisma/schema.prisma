@@ -36,6 +36,8 @@ model Candidate {
   slug                  String    @unique
   ideaId                String
   idea                  Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  proposerId            String
+  proposer              User      @relation(fields: [proposerId], references: [wallet], onDelete: Cascade)
 }
 
 model Idea {
@@ -73,6 +75,7 @@ model User {
   ideas             Idea[]
   votes             Vote[]
   comments          Comment[]
+  candidates        Candidate[]
 }
 
 // direction

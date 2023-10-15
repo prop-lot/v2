@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { DELEGATED_VOTES_BY_OWNER_SUB, DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK, GET_CURRENT_AUCTION, GET_PREVIOUS_AUCTIONS, GET_RECENT_PROPOSALS, TOTAL_NOUNS_CREATED, GET_GOVERNANCE_DATA } from '@/graphql/subgraph'
+import { DELEGATED_VOTES_BY_OWNER_SUB, DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK, GET_CURRENT_AUCTION, GET_PREVIOUS_AUCTIONS, GET_RECENT_PROPOSALS, TOTAL_NOUNS_CREATED, GET_GOVERNANCE_DATA, GET_CANDIDATE_DATA, GET_CANDIDATE_VOTES } from '@/graphql/subgraph'
 import { nounsGraphqlClient, lilNounsGraphqlClient } from '@/graphql/clients/nouns-graphql-client'
 
 // Extend this with subdomains for other DAOs that we want to integrate.
@@ -131,5 +131,21 @@ export const SupportedTokenGetterMap = {
         throw new Error('Failed to fetch governance data from subgraph')
       }
     },
+    getCandidateData: async (candidateId: string) => {
+      try {
+        const data: any = await nounsGraphqlClient.query(GET_CANDIDATE_DATA, { candidateId }).toPromise()
+        return data?.data?.proposalCandidate
+      } catch(e) {
+        throw new Error('Failed to fetch candidate data from subgraph')
+      }
+    },
+    getCandidateVotes: async (candidateId: string) => {
+      try {
+        const data: any = await nounsGraphqlClient.query(GET_CANDIDATE_VOTES, { candidateId }).toPromise()
+        return data?.data?.candidateFeedbacks
+      } catch(e) {
+        throw new Error('Failed to fetch candidate vote data from subgraph')
+      }
+    }
   }
 }

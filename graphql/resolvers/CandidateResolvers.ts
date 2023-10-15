@@ -17,6 +17,7 @@ const resolvers: IResolvers = {
       const candidate = await CandidateService.createCandidate({
         slug: args.options.slug,
         ideaId: args.options.ideaId,
+        proposer: context.authScope.user.wallet,
       });
       return candidate;
     },
