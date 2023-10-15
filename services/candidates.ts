@@ -8,7 +8,7 @@ AWS.config.update({
 });
 
 class CandidateService {
-  static async createCandidate(data: { slug: string; ideaId: string; proposer: string; }) {
+  static async createCandidate(data: { slug: string; ideaId: string; proposerId: string; }) {
     try {
       if (!data.slug || !data.ideaId) {
         throw new Error("Failed to save idea: missing slug or ideaId");
@@ -18,7 +18,7 @@ class CandidateService {
         data: {
           slug: data.slug,
           ideaId: data.ideaId,
-          proposerId: proposer,
+          proposerId: data.proposerId,
         },
       });
 
