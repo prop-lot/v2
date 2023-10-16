@@ -1,6 +1,13 @@
 import { SupportedCurrency, ProposalType } from "../../lib/types";
+import ErrorLabel from "@/components/ErrorLabel";
 
-const StreamFundsProposalForm = ({ register }: { register: any }) => {
+const StreamFundsProposalForm = ({
+  register,
+  errors,
+}: {
+  register: any;
+  errors: any;
+}) => {
   return (
     <div>
       <div>
@@ -8,7 +15,10 @@ const StreamFundsProposalForm = ({ register }: { register: any }) => {
         <div className="flex justify-between w-full items-center">
           <label className="font-bold mb-2">Currency</label>
         </div>
-        <select {...register("currency")} className="w-full border rounded p-2">
+        <select
+          {...register("currency", { required: true })}
+          className="w-full border rounded p-2"
+        >
           <option value={SupportedCurrency.WETH}>WETH</option>
           <option value={SupportedCurrency.USDC}>USDC</option>
         </select>
@@ -18,40 +28,44 @@ const StreamFundsProposalForm = ({ register }: { register: any }) => {
           </div>
           <input
             key="stream-funds-recipient"
-            {...register("recipient")}
+            {...register("recipient", { required: true })}
             type="text"
             className="border rounded-lg p-2"
           />
+          {errors.recipient && <ErrorLabel message="Recipient is required." />}
         </div>
         <div className="flex flex-col my-4">
           <div className="flex justify-between w-full items-center">
             <label className="font-bold mb-2">Amount</label>
           </div>
           <input
-            {...register("amount")}
+            {...register("amount", { required: true })}
             type="text"
             className="border rounded-lg p-2"
           />
+          {errors.amount && <ErrorLabel message="Amount is required." />}
         </div>
         <div className="flex flex-col my-4">
           <div className="flex justify-between w-full items-center">
             <label className="font-bold mb-2">Start</label>
           </div>
           <input
-            {...register("start")}
+            {...register("start", { required: true })}
             type="date"
             className="border rounded-lg p-2"
           />
+          {errors.start && <ErrorLabel message="Start date is required." />}
         </div>
         <div className="flex flex-col my-4">
           <div className="flex justify-between w-full items-center">
             <label className="font-bold mb-2">End</label>
           </div>
           <input
-            {...register("end")}
+            {...register("end", { required: true })}
             type="date"
             className="border rounded-lg p-2"
           />
+          {errors.end && <ErrorLabel message="End date is required." />}
         </div>
 
         <input

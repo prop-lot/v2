@@ -9,9 +9,11 @@ enum ProposalType {
 const FunctionCallProposalForm = ({
   register,
   setValue,
+  errors,
 }: {
   register: any;
   setValue: any;
+  errors: any;
 }) => {
   const [functions, setFunctions] = useState<any[]>([]);
   const [selectedFunction, setSelectedFunction] = useState<any>(null);

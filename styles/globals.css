@@ -4,61 +4,61 @@
 
 /* Load custom fonts */
 @font-face {
-  font-family: 'Londrina Solid';
+  font-family: "Londrina Solid";
   src: url(./fonts/Londrina_Solid/LondrinaSolid-Black.ttf);
   src: url(./fonts/Londrina_Solid/LondrinaSolid-Regular.ttf);
 }
 @font-face {
-  font-family: 'Londrina Light';
+  font-family: "Londrina Light";
   src: url(./fonts/Londrina_Solid/LondrinaSolid-Black.ttf);
   src: url(./fonts/Londrina_Solid/LondrinaSolid-Light.ttf);
 }
 
 @font-face {
-  font-family: 'PT Root UI';
-  src: url(./fonts/PT_Root_UI/PT-Root-UI_Regular.woff2) format('woff2'),
-    url(./fonts/PT_Root_UI/PT-Root-UI_Regular.woff) format('woff');
+  font-family: "PT Root UI";
+  src: url(./fonts/PT_Root_UI/PT-Root-UI_Regular.woff2) format("woff2"),
+    url(./fonts/PT_Root_UI/PT-Root-UI_Regular.woff) format("woff");
 }
 @font-face {
-  font-family: 'PT Root UI';
+  font-family: "PT Root UI";
   font-weight: 500;
-  src: url(./fonts/PT_Root_UI/PT-Root-UI_Medium.woff2) format('woff2'),
-    url(./fonts/PT_Root_UI/PT-Root-UI_Medium.woff) format('woff');
+  src: url(./fonts/PT_Root_UI/PT-Root-UI_Medium.woff2) format("woff2"),
+    url(./fonts/PT_Root_UI/PT-Root-UI_Medium.woff) format("woff");
 }
 
 @font-face {
-  font-family: 'PT Root UI';
+  font-family: "PT Root UI";
   font-weight: bold;
-  src: url(./fonts/PT_Root_UI/PT-Root-UI_Bold.woff2) format('woff2'),
-    url(./fonts/PT_Root_UI/PT-Root-UI_Bold.woff) format('woff');
+  src: url(./fonts/PT_Root_UI/PT-Root-UI_Bold.woff2) format("woff2"),
+    url(./fonts/PT_Root_UI/PT-Root-UI_Bold.woff) format("woff");
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url(./fonts/Inter/Inter-Regular.woff2) format('woff2'),
-    url(./fonts/Inter/Inter-Regular.woff) format('woff');
+  font-family: "Inter";
+  src: url(./fonts/Inter/Inter-Regular.woff2) format("woff2"),
+    url(./fonts/Inter/Inter-Regular.woff) format("woff");
 }
 
 @font-face {
-  font-family: 'Inter';
+  font-family: "Inter";
   font-weight: 600;
-  src: url(./fonts/Inter/Inter-SemiBold.woff2) format('woff2'),
-    url(./fonts/Inter/Inter-SemiBold.woff) format('woff');
+  src: url(./fonts/Inter/Inter-SemiBold.woff2) format("woff2"),
+    url(./fonts/Inter/Inter-SemiBold.woff) format("woff");
 }
 
 @font-face {
-  font-family: 'Inter';
+  font-family: "Inter";
   font-weight: 700;
-  src: url(./fonts/Inter/Inter-Bold.woff2) format('woff2'),
-    url(./fonts/Inter/Inter-Bold.woff) format('woff');
+  src: url(./fonts/Inter/Inter-Bold.woff2) format("woff2"),
+    url(./fonts/Inter/Inter-Bold.woff) format("woff");
 }
 
 .lodrina {
-  font-family: 'Londrina Solid';
+  font-family: "Londrina Solid";
 }
-  
+
 .inter {
-  font-family: 'Inter';
+  font-family: "Inter";
 }
 
 /* For Webkit-based browsers (Chrome, Safari and Opera) */
@@ -68,6 +68,23 @@
 
 /* For IE, Edge and Firefox */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: "";
+}
+
+select::-ms-expand {
+  display: none;
 }

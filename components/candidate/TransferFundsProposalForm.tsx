@@ -4,7 +4,13 @@ enum ProposalType {
   FUNCTION_CALL = "Function call",
 }
 
-const TransferFundsProposalForm = ({ register }: { register: any }) => {
+const TransferFundsProposalForm = ({
+  register,
+  errors,
+}: {
+  register: any;
+  errors: any;
+}) => {
   return (
     <div>
       <h2 className="font-bold text-xl mb-4">Transfer Funds</h2>

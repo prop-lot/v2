@@ -30,6 +30,7 @@ import { GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
 import { getIdea } from "@/graphql/types/__generated__/getIdea";
 import { client } from "@/lib/apollo";
 import Link from "next/link";
+import ErrorLabel from "@/components/ErrorLabel";
 
 export type CandidateTransaction = {
   address: string;
@@ -39,8 +40,6 @@ export type CandidateTransaction = {
   decodedCalldata?: string;
   usdcValue?: number;
 };
-
-// https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-webapp/src/components/ProposalActionsModal/steps/TransferFundsReviewStep/index.tsx#L56
 
 enum ProposalType {
   STREAM_FUNDS = "Stream funds",
@@ -213,19 +212,25 @@ const ProposalForm = ({
   proposalType,
   register,
   setValue,
+  errors,
 }: {
   proposalType: ProposalType;
   register: any;
   setValue: any;
+  errors: any;
 }) => {
   switch (proposalType) {
     case ProposalType.STREAM_FUNDS:
-      return <StreamFundsProposalForm register={register} />;
+      return <StreamFundsProposalForm register={register} errors={errors} />;
     case ProposalType.TRANSFER_FUNDS:
-      return <TransferFundsProposalForm register={register} />;
+      return <TransferFundsProposalForm register={register} errors={errors} />;
     case ProposalType.FUNCTION_CALL:
       return (
-        <FunctionCallProposalForm register={register} setValue={setValue} />
+        <FunctionCallProposalForm
+          register={register}
+          setValue={setValue}
+          errors={errors}
+        />
       );
     default:
       return <></>;
@@ -259,8 +264,10 @@ const CandidatePage = ({ idea }: { idea: any }) => {
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
-  } = useForm();
+    formState: { errors, isValid },
+  } = useForm({
+    mode: "onChange",
+  });
 
   const [submitCanidateMutation] = useMutation(SUBMIT_CANDIDATE_MUTATION, {
     context: {
@@ -371,21 +378,29 @@ const CandidatePage = ({ idea }: { idea: any }) => {
               <label className="font-bold mb-2">Title</label>
             </div>
             <input
-              {...register("title")}
+              {...register("title", { required: true })}
               type="text"
-              className="border rounded-lg p-2"
+              className={`border-[1px] rounded-lg p-2 ${
+                errors.title && "border-red-500"
+              }`}
               placeholder="Give your candidate a name..."
             />
+            {errors.title && <ErrorLabel message="Title is required." />}
           </div>
           <div className="flex flex-col my-4">
             <div className="flex justify-between w-full items-center">
               <label className="font-bold mb-2">Details</label>
             </div>
             <textarea
-              {...register("description")}
-              className="border rounded-lg p-2 scroll-py-2 min-h-[300px]"
+              {...register("description", { required: true })}
+              className={`border-[1px] rounded-lg p-2 scroll-py-2 min-h-[300px] ${
+                errors.description && "border-red-500"
+              }`}
               placeholder="Describe your candidate proposal"
             />
+            {errors.description && (
+              <ErrorLabel message="Description is required." />
+            )}
           </div>
           <h3 className="font-bold text-xl my-6">On-chain Actions</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -422,6 +437,7 @@ const CandidatePage = ({ idea }: { idea: any }) => {
           <section className="mt-4">
             {proposalType && (
               <ProposalForm
+                errors={errors}
                 proposalType={proposalType}
                 register={register}
                 setValue={setValue}
@@ -430,7 +446,12 @@ const CandidatePage = ({ idea }: { idea: any }) => {
           </section>
           {/* TODO: add disabled state to button */}
           <button
-            className="px-4 py-2 bg-green text-white rounded-lg mt-4"
+            disabled={!isValid || isLoading}
+            className={`px-4 py-2 rounded-lg mt-4 ${
+              isValid
+                ? "bg-green text-white cursor-pointer"
+                : "bg-grey text-black cursor-not-allowed"
+            }`}
             type="submit"
           >
             {isLoading ? "Loading..." : "Submit Proposal"}
