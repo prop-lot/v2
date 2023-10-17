@@ -39,11 +39,16 @@ const StreamFundsProposalForm = ({
             <label className="font-bold mb-2">Amount</label>
           </div>
           <input
-            {...register("amount", { required: true })}
+            {...register("amount", {
+              required: true,
+              min: { value: 0, message: "Amount must be positive." },
+            })}
             type="text"
             className="border rounded-lg p-2"
           />
-          {errors.amount && <ErrorLabel message="Amount is required." />}
+          {errors.amount && (
+            <ErrorLabel message="Amount is required and must be positive." />
+          )}
         </div>
         <div className="flex flex-col my-4">
           <div className="flex justify-between w-full items-center">

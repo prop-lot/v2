@@ -1,3 +1,5 @@
+import ErrorLabel from "@/components/ErrorLabel";
+
 enum ProposalType {
   STREAM_FUNDS = "Stream funds",
   TRANSFER_FUNDS = "Transfer funds",
@@ -31,20 +33,27 @@ const TransferFundsProposalForm = ({
         </div>
         <input
           key="transfer-funds-recipient"
-          {...register("recipient")}
+          {...register("recipient", { required: true })}
           type="text"
           className="border rounded-lg p-2"
         />
+        {errors.recipient && <ErrorLabel message="Recipient is required." />}
       </div>
       <div className="flex flex-col my-4">
         <div className="flex justify-between w-full items-center">
           <label className="font-bold mb-2">Amount</label>
         </div>
         <input
-          {...register("amount")}
+          {...register("amount", {
+            required: true,
+            min: { value: 0, message: "Amount must be positive." },
+          })}
           type="text"
           className="border rounded-lg p-2"
         />
+        {errors.amount && (
+          <ErrorLabel message="Amount is required and must be positive." />
+        )}
       </div>
       <input
         type="hidden"

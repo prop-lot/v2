@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ErrorLabel from "@/components/ErrorLabel";
 
 enum ProposalType {
   STREAM_FUNDS = "Stream funds",
@@ -44,25 +45,31 @@ const FunctionCallProposalForm = ({
         </div>
         <input
           key="function-call-contract-address"
-          {...register("contractAddress")}
+          {...register("contractAddress", { required: true })}
           type="text"
           className="border rounded-lg p-2"
         />
+        {errors.contractAddresss && (
+          <ErrorLabel message="Contract address is required." />
+        )}
       </div>
       <div className="flex flex-col my-4">
         <div className="flex justify-between w-full items-center">
           <label className="font-bold mb-2">Included ETH</label>
         </div>
         <input
-          {...register("amount")}
+          {...register("amount", { required: true })}
           type="number"
           className="border rounded-lg p-2"
         />
+        {errors.amount && (
+          <ErrorLabel message="Amount is required. (Can be 0)" />
+        )}
       </div>
       <div className="flex flex-col my-4">
         <label className="font-bold mb-2">Select contract function</label>
         <select
-          {...register("function")}
+          {...register("function", { required: true })}
           className="w-full border rounded p-2"
           onChange={(e) => {
             const func = functions.find((func) => func.name === e.target.value);
@@ -75,6 +82,7 @@ const FunctionCallProposalForm = ({
             </option>
           ))}
         </select>
+        {errors.function && <ErrorLabel message="Function is required." />}
       </div>
       {selectedFunction && (
         <div className="flex flex-col my-4">
