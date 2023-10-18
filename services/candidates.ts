@@ -31,6 +31,16 @@ class CandidateService {
       throw e;
     }
   }
+
+  static async getAllCandidates() {
+    try {
+      const candidates = await prisma.candidate.findMany();
+
+      return candidates;
+    } catch (e) {
+      throw e;
+    }
+  }
 }
 
 export default CandidateService;
