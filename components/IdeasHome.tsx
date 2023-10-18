@@ -7,6 +7,7 @@ import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
+import { CandidateRowContainer } from "@/components/CandidateRow";
 import useSyncURLParams from "@/hooks/useSyncURLParams";
 import EmptyState from "@/components/EmptyState";
 import { Community } from "@prisma/client";
@@ -117,6 +118,7 @@ export default function IdeasHome({
       Keep previously applied filters, remove any that match the filterId value.
       Then add the selection of updatedFilters and remove the __typename property.
     */
+
     const selectedfilters: string[] = [
       ...appliedFilters.filter((f: string) => {
         return !f.includes(`${filterId}=`);
@@ -308,6 +310,11 @@ export default function IdeasHome({
                     handleRefresh();
                   }}
                 />
+              );
+            }
+            if (listItem.__typename === "Candidate") {
+              return (
+                <CandidateRowContainer key={listItem.slug} {...listItem} />
               );
             }
 
