@@ -33,6 +33,12 @@ export const GET_IDEA_QUERY = gql`
           wallet
         }
       }
+      candidates {
+        slug
+        proposerId
+        ideaId
+        id
+      }
     }
   }
 `;

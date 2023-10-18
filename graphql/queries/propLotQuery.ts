@@ -4,6 +4,9 @@ export const GET_PROPLOT_QUERY = gql`
   query getPropLot($options: PropLotInputOptions!) {
     propLot: getPropLot(options: $options) {
       list {
+        ... on Candidate {
+          slug
+        }
         ... on Idea {
           id
           title

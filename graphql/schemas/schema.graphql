@@ -102,7 +102,7 @@ type PropLotUserProfile {
 }
 
 # Extend with Proposal when ready
-union PropLotListItems = Idea | Comment
+union PropLotListItems = Idea | Comment | Candidate
 
 type PropLotFilter {
   id: String!
@@ -214,6 +214,7 @@ type Idea {
   expiryDate: Date!
   expiryOption: IdeaExpiryOption!
   headerImage: String
+  candidates: [Candidate!]
 }
 
 type Candidate {
@@ -221,6 +222,7 @@ type Candidate {
   slug: String!
   ideaId: String!
   idea: Idea
+  proposerId: String!
   createdAt: Date!
   deleted: Boolean!
 }
