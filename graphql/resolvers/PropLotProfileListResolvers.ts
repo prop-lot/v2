@@ -191,6 +191,10 @@ const resolvers: IResolvers = {
         return "Idea";
       }
 
+      if ("slug" in obj) {
+        return "Candidate";
+      }
+
       return null; // GraphQLError is thrown
     },
   },

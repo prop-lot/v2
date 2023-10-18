@@ -1,17 +1,26 @@
 import { IResolvers } from "@graphql-tools/utils";
 import prisma from "@/lib/prisma";
 import IdeasService from "../../services/ideas";
+import CandidateService from "../../services/candidates";
 import {
   PropLotResponseMetadataResolvers,
   QueryGetPropLotArgs,
   Idea,
+  Candidate,
   PropLotFilter,
   FilterType,
   AppliedFilter,
   PropLotListItems,
+  PropLotListItemsResolvers,
 } from "@/graphql/types/__generated__/apiTypes";
 
-import { SORT_FILTERS, FILTER_IDS, DATE_FILTERS, getProfileListTypeParams, LIST_TYPE_FILTERS } from "../utils/queryUtils";
+import {
+  SORT_FILTERS,
+  FILTER_IDS,
+  DATE_FILTERS,
+  getProfileListTypeParams,
+  LIST_TYPE_FILTERS,
+} from "../utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
 
 import {
@@ -22,7 +31,11 @@ import {
   getTagParams,
 } from "../utils/queryUtils";
 
-const buildSortOptions = (sortParam: string | undefined, appliedFilterTags: AppliedFilter[] | undefined, hasAppliedFilters: boolean) => {
+const buildSortOptions = (
+  sortParam: string | undefined,
+  appliedFilterTags: AppliedFilter[] | undefined,
+  hasAppliedFilters: boolean
+) => {
   const options = Object.keys(SORT_FILTERS).map((key: string) => {
     const selected = sortParam === SORT_FILTERS[key].value;
 
@@ -30,7 +43,7 @@ const buildSortOptions = (sortParam: string | undefined, appliedFilterTags: Appl
       appliedFilterTags.unshift({
         displayName: `Sort by: ${SORT_FILTERS[key].displayName}`,
         param: SORT_FILTERS[key].value,
-      })
+      });
     }
     return {
       id: `${FILTER_IDS.SORT}-${key}`,
@@ -41,13 +54,17 @@ const buildSortOptions = (sortParam: string | undefined, appliedFilterTags: Appl
   });
 
   return options;
-}
+};
 
 export const resolveSortFilters = (
   root: any,
   exclude?: string[]
 ): PropLotFilter => {
-  const options = buildSortOptions(root.sortParam, root.appliedFilterTags, root.appliedFilters.join(",").includes(FILTER_IDS.SORT))
+  const options = buildSortOptions(
+    root.sortParam,
+    root.appliedFilterTags,
+    root.appliedFilters.join(",").includes(FILTER_IDS.SORT)
+  );
 
   const sortFilter: PropLotFilter = {
     __typename: "PropLotFilter",
@@ -67,7 +84,11 @@ export const resolveSortFilters = (
   return sortFilter;
 };
 
-const buildDateOptions = (dateParam: string | undefined, appliedFilterTags: AppliedFilter[], hasAppliedFilters: boolean) => {
+const buildDateOptions = (
+  dateParam: string | undefined,
+  appliedFilterTags: AppliedFilter[],
+  hasAppliedFilters: boolean
+) => {
   const options = Object.keys(DATE_FILTERS).map((key: string) => {
     const selected = dateParam === DATE_FILTERS[key].value;
 
@@ -75,7 +96,7 @@ const buildDateOptions = (dateParam: string | undefined, appliedFilterTags: Appl
       appliedFilterTags.push({
         displayName: `Date: ${DATE_FILTERS[key].displayName}`,
         param: DATE_FILTERS[key].value,
-      })
+      });
     }
     return {
       id: `${FILTER_IDS.DATE}-${key}`,
@@ -86,23 +107,25 @@ const buildDateOptions = (dateParam: string | undefined, appliedFilterTags: Appl
   });
 
   return options;
-}
+};
 
-const buildTagFilterOptions = async (tagParams: string[], appliedFilterTags: AppliedFilter[], hasAppliedFilters: boolean) => {
+const buildTagFilterOptions = async (
+  tagParams: string[],
+  appliedFilterTags: AppliedFilter[],
+  hasAppliedFilters: boolean
+) => {
   const tags = await prisma.tag.findMany();
   // static tag filters are the tags that come from the database
   // contrast with virtual tags (hot, etc)
   const staticTagFilterOptions = tags.map((tag) => {
-    const param = buildFilterParam(FILTER_IDS.TAG, tag.type)
-    const selected = Boolean(
-      tagParams?.includes(param)
-    );
+    const param = buildFilterParam(FILTER_IDS.TAG, tag.type);
+    const selected = Boolean(tagParams?.includes(param));
 
     if (selected && hasAppliedFilters) {
       appliedFilterTags.push({
         displayName: tag.label,
         param,
-      })
+      });
     }
     return {
       id: `${FILTER_IDS.TAG}-${tag.type}`,
@@ -116,18 +139,16 @@ const buildTagFilterOptions = async (tagParams: string[], appliedFilterTags: App
     .filter((key) => key !== "CONSENSUS") // We don't want a consensus tag appearing in the filter dropdown
     .map((key) => {
       const vT = VirtualTags[key];
-      const param = buildFilterParam(FILTER_IDS.TAG, vT.type)
+      const param = buildFilterParam(FILTER_IDS.TAG, vT.type);
       const selected = Boolean(
-        tagParams?.includes(
-          buildFilterParam(FILTER_IDS.TAG, vT.type)
-        )
-      )
+        tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, vT.type))
+      );
 
       if (selected) {
         appliedFilterTags.push({
           displayName: vT.label,
           param,
-        })
+        });
       }
       return {
         id: `${FILTER_IDS.TAG}-${vT.type}`,
@@ -138,7 +159,7 @@ const buildTagFilterOptions = async (tagParams: string[], appliedFilterTags: App
     });
 
   return [...staticTagFilterOptions, ...virtualTagFilterOptions];
-}
+};
 
 const resolvers: IResolvers = {
   Query: {
@@ -151,8 +172,16 @@ const resolvers: IResolvers = {
       const listParam = getProfileListTypeParams(appliedFilters);
       const isHomePage = appliedFilters.includes("PROPLOT_HOME");
 
-      const dateOptions = buildDateOptions(dateParam, appliedFilterTags, appliedFilters.join(",").includes(FILTER_IDS.DATE));
-      const tagFilterOptions = await buildTagFilterOptions(tagParams, appliedFilterTags, appliedFilters.join(",").includes(FILTER_IDS.TAG));
+      const dateOptions = buildDateOptions(
+        dateParam,
+        appliedFilterTags,
+        appliedFilters.join(",").includes(FILTER_IDS.DATE)
+      );
+      const tagFilterOptions = await buildTagFilterOptions(
+        tagParams,
+        appliedFilterTags,
+        appliedFilters.join(",").includes(FILTER_IDS.TAG)
+      );
 
       return {
         appliedFilters,
@@ -179,19 +208,24 @@ const resolvers: IResolvers = {
         const ideas: Idea[] = await IdeasService.findWhere({
           sortBy: parseFilterParam(root.sortParam)?.value,
           date: parseFilterParam(root.dateParam)?.value,
-          tags: root.tagParams.map((tag: string) => parseFilterParam(tag)?.value),
+          tags: root.tagParams.map(
+            (tag: string) => parseFilterParam(tag)?.value
+          ),
           communityId: root.communityId,
-          isHomePage: root.isHomePage
+          isHomePage: root.isHomePage,
         });
 
         listItems = [...ideas];
       }
 
       if (listParam === "PROPOSALS") {
+        const candidates: Candidate[] =
+          await CandidateService.getAllCandidates();
+
+        listItems = [...candidates];
 
         // QUERY FOR PROPOSALS HERE ONCE IMPLEMENTED IN THE DB.
         // This param will be passed in when a user taps the "Proposals" button on the PropLotList screen.
-
       }
 
       return listItems;
@@ -220,16 +254,15 @@ const resolvers: IResolvers = {
     },
     sortFilter: (root) => resolveSortFilters(root),
     listFilter: (root): PropLotFilter => {
-      const options = Object.keys(LIST_TYPE_FILTERS)
-        .map((key: string) => {
-          return {
-            id: `${FILTER_IDS.LIST_TYPE}-${key}`,
-            selected: root.listParam === LIST_TYPE_FILTERS[key].value,
-            label: LIST_TYPE_FILTERS[key].displayName,
-            value: LIST_TYPE_FILTERS[key].value,
-            count: LIST_TYPE_FILTERS[key].count,
-          };
-        });
+      const options = Object.keys(LIST_TYPE_FILTERS).map((key: string) => {
+        return {
+          id: `${FILTER_IDS.LIST_TYPE}-${key}`,
+          selected: root.listParam === LIST_TYPE_FILTERS[key].value,
+          label: LIST_TYPE_FILTERS[key].displayName,
+          value: LIST_TYPE_FILTERS[key].value,
+          count: LIST_TYPE_FILTERS[key].count,
+        };
+      });
       const listFilter: PropLotFilter = {
         __typename: "PropLotFilter",
         id: FILTER_IDS.LIST_TYPE,
@@ -244,7 +277,24 @@ const resolvers: IResolvers = {
       return {
         requestUUID: root.requestUUID || "",
         appliedFilters: root.appliedFilters,
+      };
+    },
+  },
+  PropLotListItems: <PropLotListItemsResolvers>{
+    __resolveType(obj) {
+      if ("authorId" in obj) {
+        return "Comment";
       }
+
+      if ("tldr" in obj) {
+        return "Idea";
+      }
+
+      if ("slug" in obj) {
+        return "Candidate";
+      }
+
+      return null; // GraphQLError is thrown
     },
   },
 };
