@@ -45,6 +45,11 @@ export interface PropLotProfileInputOptions {
   requestUUID: string;
 }
 
+export interface SubmitCandidateInputOptions {
+  slug: string;
+  ideaId: string;
+}
+
 export interface SubmitCommentInputOptions {
   ideaId: string;
   body: string;

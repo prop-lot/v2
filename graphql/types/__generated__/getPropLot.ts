@@ -13,6 +13,11 @@ export interface getPropLot_propLot_list_Comment {
   __typename: "Comment";
 }
 
+export interface getPropLot_propLot_list_Candidate {
+  __typename: "Candidate";
+  slug: string;
+}
+
 export interface getPropLot_propLot_list_Idea_ideaStats {
   __typename: "IdeaStats";
   comments: number | null;
@@ -58,7 +63,7 @@ export interface getPropLot_propLot_list_Idea {
   votes: getPropLot_propLot_list_Idea_votes[] | null;
 }
 
-export type getPropLot_propLot_list = getPropLot_propLot_list_Comment | getPropLot_propLot_list_Idea;
+export type getPropLot_propLot_list = getPropLot_propLot_list_Comment | getPropLot_propLot_list_Candidate | getPropLot_propLot_list_Idea;
 
 export interface getPropLot_propLot_sortFilter_options {
   __typename: "FilterOption";

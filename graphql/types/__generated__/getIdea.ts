@@ -35,6 +35,14 @@ export interface getIdea_getIdea_votes {
   voter: getIdea_getIdea_votes_voter;
 }
 
+export interface getIdea_getIdea_candidates {
+  __typename: "Candidate";
+  slug: string;
+  proposerId: string;
+  ideaId: string;
+  id: string;
+}
+
 export interface getIdea_getIdea {
   __typename: "Idea";
   id: string;
@@ -53,6 +61,7 @@ export interface getIdea_getIdea {
   consensus: number | null;
   tags: getIdea_getIdea_tags[] | null;
   votes: getIdea_getIdea_votes[] | null;
+  candidates: getIdea_getIdea_candidates[] | null;
 }
 
 export interface getIdea {

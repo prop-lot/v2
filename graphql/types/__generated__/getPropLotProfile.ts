@@ -32,6 +32,10 @@ export interface getPropLotProfile_propLotProfile_profile {
   user: getPropLotProfile_propLotProfile_profile_user;
 }
 
+export interface getPropLotProfile_propLotProfile_list_Candidate {
+  __typename: "Candidate";
+}
+
 export interface getPropLotProfile_propLotProfile_list_Comment_parent {
   __typename: "CommentParent";
   id: string;
@@ -108,7 +112,7 @@ export interface getPropLotProfile_propLotProfile_list_Idea {
   votes: getPropLotProfile_propLotProfile_list_Idea_votes[] | null;
 }
 
-export type getPropLotProfile_propLotProfile_list = getPropLotProfile_propLotProfile_list_Comment | getPropLotProfile_propLotProfile_list_Idea;
+export type getPropLotProfile_propLotProfile_list = getPropLotProfile_propLotProfile_list_Candidate | getPropLotProfile_propLotProfile_list_Comment | getPropLotProfile_propLotProfile_list_Idea;
 
 export interface getPropLotProfile_propLotProfile_sortFilter_options {
   __typename: "FilterOption";
