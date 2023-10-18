@@ -108,12 +108,10 @@ export const LIST_TYPE_FILTERS: { [key: string]: any } = {
   IDEAS: {
     value: buildFilterParam(FILTER_IDS.LIST_TYPE, "IDEAS"),
     displayName: "Ideas",
-    count: 20, // TODO: pull from DB
   },
   PROPOSALS: {
     value: buildFilterParam(FILTER_IDS.LIST_TYPE, "PROPOSALS"),
     displayName: "Proposals",
-    count: 10, // TODO: pull from DB
   },
 };
 

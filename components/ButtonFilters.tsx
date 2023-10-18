@@ -1,5 +1,8 @@
-import { useEffect, useState, ReactNode, MouseEvent } from 'react';
-import { buildSelectedFilters, updateSelectedFilters } from '@/utils/queryFilterHelpers';
+import { useEffect, useState, ReactNode, MouseEvent } from "react";
+import {
+  buildSelectedFilters,
+  updateSelectedFilters,
+} from "@/utils/queryFilterHelpers";
 
 import {
   getPropLot_propLot_tagFilter as TagFilter,
@@ -10,15 +13,14 @@ import {
   getPropLot_propLot_dateFilter_options as DateFilterOptions,
   getPropLot_propLot_listFilter as ListFilter,
   getPropLot_propLot_listFilter_options as ListFilterOptions,
-
-} from '@/graphql/types/__generated__/getPropLot';
-import { FilterType } from '@/graphql/types/__generated__/globalTypes';
+} from "@/graphql/types/__generated__/getPropLot";
+import { FilterType } from "@/graphql/types/__generated__/globalTypes";
 
 export type GenericFilter = {
   id: string;
   type: FilterType;
   label: string | null;
-  __typename: 'PropLotFilter';
+  __typename: "PropLotFilter";
   options: {
     id: string;
     label: string | null;
@@ -26,12 +28,16 @@ export type GenericFilter = {
     value: string;
     count: number | null;
     icon: string | null;
-    __typename: 'FilterOption';
+    __typename: "FilterOption";
   }[];
 };
 
 type Filter = TagFilter | SortFilter | DateFilter | ListFilter;
-type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions | ListFilterOptions;
+type FilterOptions =
+  | TagFilterOptions
+  | SortFilterOptions
+  | DateFilterOptions
+  | ListFilterOptions;
 
 export const ButtonWrapper = ({ children }: { children: ReactNode }) => {
   return (
@@ -56,7 +62,9 @@ export const ButtonFilterOption = ({
     <button
       onClick={onClick}
       key={id}
-      className="flex gap-sm !bg-grey/80 !text-black !border-none !text-sm !rounded-[10px] !font-inter !pt-sm !pb-sm !pl-md !pr-md self-center"
+      className={`flex gap-sm ${
+        isSelected ? "bg-light-green text-white" : "bg-grey/80 text-black"
+      } !border-none !text-sm !rounded-[10px] !font-inter !pt-sm !pb-sm !pl-md !pr-md self-center`}
     >
       {children}
     </button>
@@ -70,14 +78,21 @@ const ButtonFilters = ({
   filter: Filter;
   updateFilters: (filters: string[], filterId: string) => void;
 }) => {
-  const [selectedFilters, setSelectedFilters] = useState(buildSelectedFilters(filter));
+  const [selectedFilters, setSelectedFilters] = useState(
+    buildSelectedFilters(filter)
+  );
 
   useEffect(() => {
     setSelectedFilters(buildSelectedFilters(filter));
   }, [filter]);
 
   const handleUpdateFilters = (opt: FilterOptions, isSelected: boolean) => {
-    const newFilters = updateSelectedFilters(filter, selectedFilters, opt, isSelected);
+    const newFilters = updateSelectedFilters(
+      filter,
+      selectedFilters,
+      opt,
+      isSelected
+    );
 
     setSelectedFilters(newFilters);
     updateFilters(newFilters, filter.id);
@@ -85,8 +100,10 @@ const ButtonFilters = ({
 
   return (
     <ButtonWrapper>
-      {filter.options.map(opt => {
-        const isSelected = selectedFilters.some(selectedFilter => selectedFilter === opt.value);
+      {filter.options.map((opt) => {
+        const isSelected = selectedFilters.some(
+          (selectedFilter) => selectedFilter === opt.value
+        );
         return (
           <ButtonFilterOption
             key={opt.id}
@@ -98,7 +115,17 @@ const ButtonFilters = ({
             }}
           >
             {opt.label}
-            {opt.count && <span className={`rounded-[100px] px-xs ${isSelected ? 'bg-light-green text-white' : 'bg-grey text-black'}`}>{opt.count}</span>}
+            {opt.count && (
+              <span
+                className={`rounded-[100px] px-xs ${
+                  isSelected
+                    ? "bg-light-green text-white"
+                    : "bg-grey text-black"
+                }`}
+              >
+                {opt.count}
+              </span>
+            )}
           </ButtonFilterOption>
         );
       })}
