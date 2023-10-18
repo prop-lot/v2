@@ -110,3 +110,63 @@ export const GET_GOVERNANCE_DATA = gql`
   }
 }
 `
+
+export const GET_CANDIDATE_DATA = gql`
+query getCandidateData($candidateId: ID!) {
+  proposalCandidate(id: $candidateId) {
+    id
+    slug
+    proposer
+    lastUpdatedTimestamp
+    createdTransactionHash
+    canceled
+    versions {
+      content {
+        title
+      }
+    }
+    latestVersion {
+      content {
+        title
+        description
+        targets
+        values
+        signatures
+        calldatas
+        encodedProposalHash
+        proposalIdToUpdate
+        contentSignatures {
+          id
+          signer {
+            id
+            proposals {
+              id
+            }
+          }
+          sig
+          expirationTimestamp
+          canceled
+          reason
+        }
+      }
+    }
+  }
+}
+`
+
+export const GET_CANDIDATE_VOTES = gql`
+query getCandidateVotes($candidateId: ID!) {
+  candidateFeedbacks(where: {candidate_: {id: $candidateId}}) {
+    supportDetailed
+    votes
+    reason
+    createdTimestamp
+    voter {
+      id
+    }
+    candidate {
+      id
+    }
+  }
+}
+`;

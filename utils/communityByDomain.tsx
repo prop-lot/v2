@@ -12,7 +12,7 @@ const getCommunityByDomain = (req: any) => {
     : host?.match(/(.*)\.proplot\.wtf/);
 
   const communityDomain =
-    subdomain?.[1]?.toLowerCase() || (isDev && cdHeader?.toLowerCase()) || "";
+    subdomain?.[1]?.toLowerCase() || (isDev && cdHeader?.toLowerCase()) || "nouns";
   const supportedTokenConfig =
     SupportedTokenGetterMap[communityDomain as SUPPORTED_SUBDOMAINS];
 

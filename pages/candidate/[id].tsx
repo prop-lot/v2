@@ -9,64 +9,8 @@ import CandidateProposalProgress from "../../components/CandidateProposalProgres
 import CandidateConsensusVote from "../../components/CandidateConsensusVote";
 import CandidateSponsors from "../../components/CandidateSponsors";
 import CandidateVoteGrid from "../../components/CandidateVoteGrid";
-
-const QUERY = `
-query GetProposalCandidateById($id: ID!) {
-  proposalCandidate(id: $id) {
-    id
-    slug
-    proposer
-    lastUpdatedTimestamp
-    createdTransactionHash
-    canceled
-    versions {
-      content {
-        title
-      }
-    }
-    latestVersion {
-      content {
-        title
-        description
-        targets
-        values
-        signatures
-        calldatas
-        encodedProposalHash
-        proposalIdToUpdate
-        contentSignatures {
-          id
-          signer {
-            id
-            proposals {
-              id
-            }
-          }
-          sig
-          expirationTimestamp
-          canceled
-          reason
-        }
-      }
-    }
-  }
-}`;
-
-const VOTES_QUERY = `
-query GetVotesWithFeedback($candidateId: ID!) {
-  candidateFeedbacks(where: {candidate_: {id: $candidateId}}) {
-    supportDetailed
-    votes
-    reason
-    createdTimestamp
-    voter {
-      id
-    }
-    candidate {
-      id
-    }
-  }
-}`;
+import { GET_CANDIDATE_DATA } from "../../graphql/subgraph";
+import { SupportedTokenGetterMap } from "../../utils/supportedTokenUtils";
 
 // example URL http://localhost:3000/candidate/0x57a39aa135a688cf18ece526f1d3597a11e1b32a-candidate-to-proposal
 // todo - types
@@ -169,48 +113,15 @@ const CandidateIndexPage = ({
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { id } = context.query as { id: string };
 
+  const supportedTokenConfig =
+  SupportedTokenGetterMap["nouns" as SUPPORTED_SUBDOMAINS];
+
   try {
-    const response = await fetch(
-      // make const in config
-      "https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns-v3-goerli/0.1.6/gn",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          query: QUERY,
-          variables: {
-            id: id.toLowerCase(),
-          },
-        }),
-      }
-    );
+    const proposalCandidate = await supportedTokenConfig.getCandidateData(id.toLowerCase());
 
-    const data = await response.json();
-    const proposalCandidate = data.data.proposalCandidate;
+    const votesResponse = await supportedTokenConfig.getCandidateVotes(proposalCandidate.id);
 
-    const votesResponse = await fetch(
-      // make const in config
-      "https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns-v3-goerli/0.1.6/gn",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          query: VOTES_QUERY,
-          variables: {
-            candidateId: proposalCandidate.id,
-          },
-        }),
-      }
-    );
-
-    const votesData = await votesResponse.json();
-    const votes = votesData.data.candidateFeedbacks;
-
-    const orderedVotes = votes.reduce(
+    const orderedVotes = votesResponse.reduce(
       (acc: any, vote: any) => {
         if (vote.supportDetailed === 0) {
           acc.against.push(vote);

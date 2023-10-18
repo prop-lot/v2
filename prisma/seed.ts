@@ -61,6 +61,31 @@ async function seed() {
     });
   }
 
+  user.wallet = "0x0658f4ed17289144717713adffc2539ef7c2ef8e"
+  await prisma.user.create({ data: user });
+
+  const ideaWithCandidate = await prisma.idea.create({
+    data: {
+      communityId: community.id,
+      title: chance.word({ length: 5 }),
+      tldr: chance.sentence({ words: 5 }),
+      description: chance.sentence({ words: 10 }),
+      creatorId: `0x0658f4ed17289144717713adffc2539ef7c2ef8e`,
+      tokenSupplyOnCreate: 50,
+      createdAtBlock: 16534162,
+      expiryDate: moment(new Date()).add(7, "days").toDate(),
+      expiryOption: "SEVEN_DAYS"
+    },
+  });
+
+  await prisma.candidate.create({
+    data: {
+      ideaId: ideaWithCandidate.id,
+      slug: "bring-a-million-shredders-onchain",
+      proposerId: '0x0658f4ed17289144717713adffc2539ef7c2ef8e',
+    },
+  });
+
   for (let i = 0; i < 20; i++) {
     user.wallet = `0xcf7ed3acca5a467e9e704c703e8d87f634fb0f${
       i < 10 ? `c${i}` : i
