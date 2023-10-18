@@ -114,12 +114,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { id } = context.query as { id: string };
 
   const supportedTokenConfig =
-  SupportedTokenGetterMap["nouns" as SUPPORTED_SUBDOMAINS];
+    SupportedTokenGetterMap["nouns" as SUPPORTED_SUBDOMAINS];
 
   try {
-    const proposalCandidate = await supportedTokenConfig.getCandidateData(id.toLowerCase());
+    const proposalCandidates = await supportedTokenConfig.getAllCandidateData([
+      id,
+    ]);
 
-    const votesResponse = await supportedTokenConfig.getCandidateVotes(proposalCandidate.id);
+    const proposalCandidate = proposalCandidates?.[0];
+
+    const votesResponse = await supportedTokenConfig.getCandidateVotes(
+      proposalCandidate.id
+    );
 
     const orderedVotes = votesResponse.reduce(
       (acc: any, vote: any) => {
