@@ -7,7 +7,17 @@ import { GET_ALL_CANDIDATE_DATA } from "@/graphql/subgraph";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import useIntersectionObserver from "@/hooks/useIntersectionObserver";
 
-export const CandidateRowContainer = ({ slug }) => {
+interface CandidateRowProps {
+  slug: string;
+  proposer: string;
+  latestVersion: {
+    content: {
+      title: string;
+    };
+  };
+}
+
+export const CandidateRowContainer = ({ slug }: { slug: string }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const entry = useIntersectionObserver(ref, {});
   const isVisible = !!entry?.isIntersecting;
@@ -44,7 +54,7 @@ export const CandidateRowContainer = ({ slug }) => {
   return <CandidateRow ref={ref} {...canadidateData} />;
 };
 
-const CandidateRow = ({ slug, proposer, latestVersion }) => {
+const CandidateRow: React.FC<CandidateRowProps> = ({ slug, proposer, latestVersion }) => {
   const router = useRouter();
 
   const { data: creatorEns } = useEnsName({
