@@ -4,71 +4,73 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  Date: any;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  Date: { input: any; output: any; }
 };
 
 export type AppliedFilter = {
   __typename?: 'AppliedFilter';
-  displayName: Scalars['String'];
-  param: Scalars['String'];
+  displayName: Scalars['String']['output'];
+  param: Scalars['String']['output'];
 };
 
 export type Candidate = {
   __typename?: 'Candidate';
-  createdAt: Scalars['Date'];
-  id: Scalars['String'];
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['String']['output'];
   idea?: Maybe<Idea>;
-  ideaId: Scalars['String'];
-  proposerId: Scalars['String'];
-  slug: Scalars['String'];
+  ideaId: Scalars['String']['output'];
+  proposerId: Scalars['String']['output'];
+  slug: Scalars['String']['output'];
 };
 
 export type Comment = {
   __typename?: 'Comment';
-  authorId: Scalars['String'];
-  body: Scalars['String'];
-  createdAt: Scalars['Date'];
-  deleted: Scalars['Boolean'];
-  id: Scalars['String'];
+  authorId: Scalars['String']['output'];
+  body: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
+  deleted: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
   idea?: Maybe<Idea>;
-  ideaId: Scalars['String'];
+  ideaId: Scalars['String']['output'];
   parent?: Maybe<CommentParent>;
-  parentId?: Maybe<Scalars['String']>;
+  parentId?: Maybe<Scalars['String']['output']>;
   replies?: Maybe<Array<Comment>>;
 };
 
 export type CommentParent = {
   __typename?: 'CommentParent';
-  authorId: Scalars['String'];
-  body: Scalars['String'];
-  createdAt: Scalars['Date'];
-  id: Scalars['String'];
-  ideaId: Scalars['String'];
+  authorId: Scalars['String']['output'];
+  body: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['String']['output'];
+  ideaId: Scalars['String']['output'];
 };
 
 export type DeleteDataResponse = {
   __typename?: 'DeleteDataResponse';
-  id?: Maybe<Scalars['String']>;
-  success?: Maybe<Scalars['Boolean']>;
+  id?: Maybe<Scalars['String']['output']>;
+  success?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type FilterOption = {
   __typename?: 'FilterOption';
-  count?: Maybe<Scalars['Int']>;
-  icon?: Maybe<Scalars['String']>;
-  id: Scalars['String'];
-  label?: Maybe<Scalars['String']>;
-  selected: Scalars['Boolean'];
-  value: Scalars['String'];
+  count?: Maybe<Scalars['Int']['output']>;
+  icon?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
+  selected: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 export enum FilterType {
@@ -79,28 +81,28 @@ export enum FilterType {
 export type Idea = {
   __typename?: 'Idea';
   candidates?: Maybe<Array<Candidate>>;
-  closed: Scalars['Boolean'];
+  closed: Scalars['Boolean']['output'];
   comments?: Maybe<Array<Comment>>;
-  consensus?: Maybe<Scalars['Float']>;
-  createdAt: Scalars['Date'];
-  createdAtBlock: Scalars['Int'];
-  creatorId: Scalars['String'];
-  deleted: Scalars['Boolean'];
-  description: Scalars['String'];
-  expiryDate: Scalars['Date'];
+  consensus?: Maybe<Scalars['Float']['output']>;
+  createdAt: Scalars['Date']['output'];
+  createdAtBlock: Scalars['Int']['output'];
+  creatorId: Scalars['String']['output'];
+  deleted: Scalars['Boolean']['output'];
+  description: Scalars['String']['output'];
+  expiryDate: Scalars['Date']['output'];
   expiryOption: IdeaExpiryOption;
-  headerImage?: Maybe<Scalars['String']>;
-  id: Scalars['String'];
+  headerImage?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
   ideaStats?: Maybe<IdeaStats>;
   tags?: Maybe<Array<IdeaTags>>;
-  title: Scalars['String'];
-  tldr: Scalars['String'];
-  votecount: Scalars['Int'];
+  title: Scalars['String']['output'];
+  tldr: Scalars['String']['output'];
+  votecount: Scalars['Int']['output'];
   votes?: Maybe<Array<Vote>>;
 };
 
 export type IdeaCommentInputOptions = {
-  ideaId: Scalars['String'];
+  ideaId: Scalars['String']['input'];
 };
 
 export enum IdeaExpiryOption {
@@ -110,18 +112,18 @@ export enum IdeaExpiryOption {
 }
 
 export type IdeaInputOptions = {
-  ideaId?: InputMaybe<Scalars['String']>;
+  ideaId?: InputMaybe<Scalars['String']['input']>;
   sort?: InputMaybe<Sort_Type>;
 };
 
 export type IdeaStats = {
   __typename?: 'IdeaStats';
-  comments?: Maybe<Scalars['Int']>;
+  comments?: Maybe<Scalars['Int']['output']>;
 };
 
 export type IdeaTags = {
   __typename?: 'IdeaTags';
-  label: Scalars['String'];
+  label: Scalars['String']['output'];
   type: TagType;
 };
 
@@ -137,12 +139,12 @@ export type Mutation = {
 
 
 export type MutationDeleteIdeaArgs = {
-  id: Scalars['String'];
+  id: Scalars['String']['input'];
 };
 
 
 export type MutationDeleteIdeaCommentArgs = {
-  id: Scalars['String'];
+  id: Scalars['String']['input'];
 };
 
 
@@ -167,23 +169,23 @@ export type MutationSubmitIdeaVoteArgs = {
 
 export type PropLotFilter = {
   __typename?: 'PropLotFilter';
-  id: Scalars['String'];
-  label?: Maybe<Scalars['String']>;
+  id: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
   options: Array<FilterOption>;
   type: FilterType;
 };
 
 export type PropLotInputOptions = {
-  filters?: InputMaybe<Array<Scalars['String']>>;
-  requestUUID: Scalars['String'];
+  filters?: InputMaybe<Array<Scalars['String']['input']>>;
+  requestUUID: Scalars['String']['input'];
 };
 
 export type PropLotListItems = Candidate | Comment | Idea;
 
 export type PropLotProfileInputOptions = {
-  filters?: InputMaybe<Array<Scalars['String']>>;
-  requestUUID: Scalars['String'];
-  wallet: Scalars['String'];
+  filters?: InputMaybe<Array<Scalars['String']['input']>>;
+  requestUUID: Scalars['String']['input'];
+  wallet: Scalars['String']['input'];
 };
 
 export type PropLotProfileResponse = {
@@ -208,8 +210,8 @@ export type PropLotResponse = {
 
 export type PropLotResponseMetadata = {
   __typename?: 'PropLotResponseMetadata';
-  appliedFilters?: Maybe<Array<Scalars['String']>>;
-  requestUUID: Scalars['String'];
+  appliedFilters?: Maybe<Array<Scalars['String']['output']>>;
+  requestUUID: Scalars['String']['output'];
 };
 
 export type PropLotUserProfile = {
@@ -267,28 +269,28 @@ export enum Sort_Type {
 }
 
 export type SubmitCandidateInputOptions = {
-  ideaId: Scalars['String'];
-  slug: Scalars['String'];
+  ideaId: Scalars['String']['input'];
+  slug: Scalars['String']['input'];
 };
 
 export type SubmitCommentInputOptions = {
-  body: Scalars['String'];
-  ideaId: Scalars['String'];
-  parentId?: InputMaybe<Scalars['Int']>;
+  body: Scalars['String']['input'];
+  ideaId: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type SubmitIdeaInputOptions = {
-  description: Scalars['String'];
+  description: Scalars['String']['input'];
   expiryOption: IdeaExpiryOption;
-  headerImage?: InputMaybe<Scalars['String']>;
+  headerImage?: InputMaybe<Scalars['String']['input']>;
   tags?: InputMaybe<Array<TagType>>;
-  title: Scalars['String'];
-  tldr: Scalars['String'];
+  title: Scalars['String']['input'];
+  tldr: Scalars['String']['input'];
 };
 
 export type SubmitVoteInputOptions = {
-  direction: Scalars['Int'];
-  ideaId: Scalars['String'];
+  direction: Scalars['Int']['input'];
+  ideaId: Scalars['String']['input'];
 };
 
 export enum TagType {
@@ -310,33 +312,33 @@ export enum TagType {
 export type User = {
   __typename?: 'User';
   userStats?: Maybe<UserStats>;
-  wallet: Scalars['String'];
+  wallet: Scalars['String']['output'];
 };
 
 export type UserInputOptions = {
-  wallet: Scalars['String'];
+  wallet: Scalars['String']['input'];
 };
 
 export type UserStats = {
   __typename?: 'UserStats';
-  downvotesReceived?: Maybe<Scalars['Int']>;
-  netVotesReceived?: Maybe<Scalars['Int']>;
-  totalComments?: Maybe<Scalars['Int']>;
-  totalDownvotes?: Maybe<Scalars['Int']>;
-  totalIdeas?: Maybe<Scalars['Int']>;
-  totalUpvotes?: Maybe<Scalars['Int']>;
-  totalVotes?: Maybe<Scalars['Int']>;
-  upvotesReceived?: Maybe<Scalars['Int']>;
+  downvotesReceived?: Maybe<Scalars['Int']['output']>;
+  netVotesReceived?: Maybe<Scalars['Int']['output']>;
+  totalComments?: Maybe<Scalars['Int']['output']>;
+  totalDownvotes?: Maybe<Scalars['Int']['output']>;
+  totalIdeas?: Maybe<Scalars['Int']['output']>;
+  totalUpvotes?: Maybe<Scalars['Int']['output']>;
+  totalVotes?: Maybe<Scalars['Int']['output']>;
+  upvotesReceived?: Maybe<Scalars['Int']['output']>;
 };
 
 export type Vote = {
   __typename?: 'Vote';
-  direction: Scalars['Int'];
-  id: Scalars['String'];
-  ideaId: Scalars['String'];
+  direction: Scalars['Int']['output'];
+  id: Scalars['String']['output'];
+  ideaId: Scalars['String']['output'];
   voter: User;
-  voterId: Scalars['String'];
-  voterWeight: Scalars['Int'];
+  voterId: Scalars['String']['output'];
+  voterWeight: Scalars['Int']['output'];
 };
 
 export type GetIdeaCommentsQueryVariables = Exact<{
@@ -483,29 +485,35 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+/** Mapping of union types */
+export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
+  PropLotListItems: ( Candidate ) | ( Comment ) | ( Idea );
+};
+
+
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   AppliedFilter: ResolverTypeWrapper<AppliedFilter>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Candidate: ResolverTypeWrapper<Candidate>;
   Comment: ResolverTypeWrapper<Comment>;
   CommentParent: ResolverTypeWrapper<CommentParent>;
-  Date: ResolverTypeWrapper<Scalars['Date']>;
+  Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   DeleteDataResponse: ResolverTypeWrapper<DeleteDataResponse>;
   FilterOption: ResolverTypeWrapper<FilterOption>;
   FilterType: FilterType;
-  Float: ResolverTypeWrapper<Scalars['Float']>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   Idea: ResolverTypeWrapper<Idea>;
   IdeaCommentInputOptions: IdeaCommentInputOptions;
   IdeaExpiryOption: IdeaExpiryOption;
   IdeaInputOptions: IdeaInputOptions;
   IdeaStats: ResolverTypeWrapper<IdeaStats>;
   IdeaTags: ResolverTypeWrapper<IdeaTags>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   PropLotFilter: ResolverTypeWrapper<PropLotFilter>;
   PropLotInputOptions: PropLotInputOptions;
-  PropLotListItems: ResolversTypes['Candidate'] | ResolversTypes['Comment'] | ResolversTypes['Idea'];
+  PropLotListItems: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['PropLotListItems']>;
   PropLotProfileInputOptions: PropLotProfileInputOptions;
   PropLotProfileResponse: ResolverTypeWrapper<Omit<PropLotProfileResponse, 'list'> & { list?: Maybe<Array<ResolversTypes['PropLotListItems']>> }>;
   PropLotResponse: ResolverTypeWrapper<Omit<PropLotResponse, 'list'> & { list?: Maybe<Array<ResolversTypes['PropLotListItems']>> }>;
@@ -513,7 +521,7 @@ export type ResolversTypes = {
   PropLotUserProfile: ResolverTypeWrapper<PropLotUserProfile>;
   Query: ResolverTypeWrapper<{}>;
   SORT_TYPE: Sort_Type;
-  String: ResolverTypeWrapper<Scalars['String']>;
+  String: ResolverTypeWrapper<Scalars['String']['output']>;
   SubmitCandidateInputOptions: SubmitCandidateInputOptions;
   SubmitCommentInputOptions: SubmitCommentInputOptions;
   SubmitIdeaInputOptions: SubmitIdeaInputOptions;
@@ -528,31 +536,31 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   AppliedFilter: AppliedFilter;
-  Boolean: Scalars['Boolean'];
+  Boolean: Scalars['Boolean']['output'];
   Candidate: Candidate;
   Comment: Comment;
   CommentParent: CommentParent;
-  Date: Scalars['Date'];
+  Date: Scalars['Date']['output'];
   DeleteDataResponse: DeleteDataResponse;
   FilterOption: FilterOption;
-  Float: Scalars['Float'];
+  Float: Scalars['Float']['output'];
   Idea: Idea;
   IdeaCommentInputOptions: IdeaCommentInputOptions;
   IdeaInputOptions: IdeaInputOptions;
   IdeaStats: IdeaStats;
   IdeaTags: IdeaTags;
-  Int: Scalars['Int'];
+  Int: Scalars['Int']['output'];
   Mutation: {};
   PropLotFilter: PropLotFilter;
   PropLotInputOptions: PropLotInputOptions;
-  PropLotListItems: ResolversParentTypes['Candidate'] | ResolversParentTypes['Comment'] | ResolversParentTypes['Idea'];
+  PropLotListItems: ResolversUnionTypes<ResolversParentTypes>['PropLotListItems'];
   PropLotProfileInputOptions: PropLotProfileInputOptions;
   PropLotProfileResponse: Omit<PropLotProfileResponse, 'list'> & { list?: Maybe<Array<ResolversParentTypes['PropLotListItems']>> };
   PropLotResponse: Omit<PropLotResponse, 'list'> & { list?: Maybe<Array<ResolversParentTypes['PropLotListItems']>> };
   PropLotResponseMetadata: PropLotResponseMetadata;
   PropLotUserProfile: PropLotUserProfile;
   Query: {};
-  String: Scalars['String'];
+  String: Scalars['String']['output'];
   SubmitCandidateInputOptions: SubmitCandidateInputOptions;
   SubmitCommentInputOptions: SubmitCommentInputOptions;
   SubmitIdeaInputOptions: SubmitIdeaInputOptions;
