@@ -1,7 +1,5 @@
 import Image from "next/image";
 
-import { Community } from "@prisma/client";
-
 import Link from "next/link";
 import { formatEthValue } from "@/utils/ethers";
 import { StandaloneNounCircular } from "./NounCircular";

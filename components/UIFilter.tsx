@@ -1,22 +1,16 @@
 import { useEffect, useState, forwardRef } from "react";
-import {
-  getPropLot_propLot_tagFilter as TagFilter,
-  getPropLot_propLot_tagFilter_options as TagFilterOptions,
-  getPropLot_propLot_sortFilter as SortFilter,
-  getPropLot_propLot_sortFilter_options as SortFilterOptions,
-  getPropLot_propLot_dateFilter as DateFilter,
-  getPropLot_propLot_dateFilter_options as DateFilterOptions,
-} from "@/graphql/types/__generated__/getPropLot";
 
-import { FilterType as FilterTyeEnum } from "@/graphql/types/__generated__/globalTypes";
+import {
+  PropLotFilter,
+  FilterOption,
+  FilterType as FilterTypeEnum
+} from "@/graphql/types/__generated__/types";
+
 import { Dropdown, Form } from "react-bootstrap";
 import {
   updateSelectedFilters,
   buildSelectedFilters,
 } from "@/utils/queryFilterHelpers";
-
-type Filter = TagFilter | SortFilter | DateFilter;
-type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
 
 type CustomToggleProps = {
   children?: React.ReactNode;
@@ -52,7 +46,7 @@ const UIFilter = ({
   filter,
   updateFilters,
 }: {
-  filter: Filter;
+  filter: PropLotFilter;
   updateFilters: (filters: string[], filterId: string) => void;
 }) => {
   const [selectedFilters, setSelectedFilters] = useState(
@@ -63,7 +57,7 @@ const UIFilter = ({
     setSelectedFilters(buildSelectedFilters(filter));
   }, [filter]);
 
-  const handleUpdateFilters = (opt: FilterOptions, isSelected: boolean) => {
+  const handleUpdateFilters = (opt: FilterOption, isSelected: boolean) => {
     const newFilters = updateSelectedFilters(
       filter,
       selectedFilters,
@@ -110,7 +104,7 @@ const UIFilter = ({
               } min-width-[250px] cursor-pointer active:!bg-white !hover:bg-[#E2E3E8] rounded-[6px] justify-start mb-xs mt-xs !pt-sm !pb-sm pl-md pr-md`}
             >
               <div className="flex items-center">
-                {filter.type === FilterTyeEnum.MULTI_SELECT && (
+                {filter.type === FilterTypeEnum.MULTI_SELECT && (
                   <Form.Check
                     type="radio"
                     name={opt.value}

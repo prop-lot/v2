@@ -1,21 +1,13 @@
 import {
-  getPropLot_propLot_tagFilter as TagFilter,
-  getPropLot_propLot_tagFilter_options as TagFilterOptions,
-  getPropLot_propLot_sortFilter as SortFilter,
-  getPropLot_propLot_sortFilter_options as SortFilterOptions,
-  getPropLot_propLot_dateFilter as DateFilter,
-  getPropLot_propLot_dateFilter_options as DateFilterOptions,
-} from "@/graphql/types/__generated__/getPropLot";
-
-import { FilterType as FilterTypeEnum } from "@/graphql/types/__generated__/globalTypes";
-
-type Filter = TagFilter | SortFilter | DateFilter;
-type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
+  PropLotFilter,
+  FilterOption,
+  FilterType as FilterTypeEnum
+} from "@/graphql/types/__generated__/types";
 
 /*
   Find and return the preselected filter options from the GraphQL response.
 */
-export const buildSelectedFilters = (filter: Filter) => {
+export const buildSelectedFilters = (filter: PropLotFilter) => {
   const selectedParams: string[] = [];
   filter.options.forEach(({ selected, value }) => {
     if (selected) {
@@ -29,9 +21,9 @@ export const buildSelectedFilters = (filter: Filter) => {
   Use to keep track of single or multiselect filters for PropLot Home or Profile filters
 */
 export const updateSelectedFilters = (
-  filter: Filter,
+  filter: PropLotFilter,
   selectedFilters: string[],
-  opt: FilterOptions,
+  opt: FilterOption,
   isSelected: boolean
 ) => {
   let newFilters = [...selectedFilters];

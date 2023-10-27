@@ -4,8 +4,7 @@ import { useApiError } from "@/hooks/useApiError";
 import { useMutation } from "@apollo/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SUBMIT_VOTE_MUTATION } from "@/graphql/queries/propLotMutations";
-import { submitIdeaVote } from "@/graphql/types/__generated__/submitIdeaVote";
-import { getPropLot_propLot_list_Idea as Idea } from "@/graphql/types/__generated__/getPropLot";
+import { SubmitIdeaVoteMutation, Idea } from "@/graphql/types/__generated__/types";
 
 import { useEffect, useState } from "react";
 
@@ -33,7 +32,7 @@ const IdeaVoteControls = ({
   const hasVotes = nounBalance > 0;
 
   const [submitVoteMutation, { error, loading, data }] =
-    useMutation<submitIdeaVote>(SUBMIT_VOTE_MUTATION, {
+    useMutation<SubmitIdeaVoteMutation>(SUBMIT_VOTE_MUTATION, {
       fetchPolicy: "no-cache",
       errorPolicy: "all",
       refetchQueries: refetchPropLotOnVote ? ["getPropLot"] : [],

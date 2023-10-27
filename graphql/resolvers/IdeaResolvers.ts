@@ -13,7 +13,7 @@ import {
   MutationDeleteIdeaArgs,
   DeleteDataResponse,
   QueryGetIdeaCommentsArgs,
-} from "@/graphql/types/__generated__/apiTypes";
+} from "@/graphql/types/__generated__/types";
 import { TagType } from "@prisma/client";
 
 import { VirtualTags } from "@/utils/virtual";

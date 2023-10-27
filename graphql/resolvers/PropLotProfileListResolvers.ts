@@ -5,8 +5,8 @@ import {
   Idea as PrismaIdea,
   Comment as PrismaComment,
 } from "@prisma/client";
-import IdeasService from "../../services/ideas";
-import UserService from "../../services/user";
+import IdeasService from "@/services/ideas";
+import UserService from "@/services/user";
 import {
   PropLotResponseMetadataResolvers,
   QueryGetPropLotProfileArgs,
@@ -15,7 +15,7 @@ import {
   PropLotListItemsResolvers,
   PropLotFilter,
   FilterType,
-} from "@/graphql/types/__generated__/apiTypes";
+} from "@/graphql/types/__generated__/types";
 
 import { resolveSortFilters } from "./PropLotListResolvers";
 

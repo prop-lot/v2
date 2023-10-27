@@ -8,14 +8,20 @@ import IdeaRow from "@/components/IdeaRow";
 import EmptyState from "@/components/EmptyState";
 import FAQAccordion from "@/components/FAQAccordion";
 import CommunityHomeLiveDataBoard from "@/components/CommunityHomeLiveDataBoard";
-import { getPropLot } from "@/graphql/types/__generated__/getPropLot";
 import Link from "next/link";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
-import { getTags, getTags_tags } from "@/graphql/types/__generated__/getTags";
 
-const TagButtons = ({ tags }: { tags: getTags_tags[] }) => (
+import {
+  GetPropLotQuery,
+  GetTagsQuery,
+} from "@/graphql/types/__generated__/types";
+import {
+  DelegatedVotesQuery
+} from "@/graphql/types/__generated__/subgraphTypes";
+
+const TagButtons = ({ tags }: { tags: GetTagsQuery['tags'] }) => (
   <div className="grid grid-cols-3 gap-lg md:grid-cols-4">
-    {tags.map(({ label, type }) => (
+    {tags?.map(({ label, type }) => (
       <Link
         key={type}
         href={`/ideas?tag=${type}`}
@@ -62,10 +68,10 @@ const TagButtons = ({ tags }: { tags: getTags_tags[] }) => (
   </div>
 );
 
-export default function CommunityHome({ tagsData, proplotListData }: { tagsData: getTags, proplotListData: getPropLot}) {
+export default function CommunityHome({ tagsData, proplotListData }: { tagsData: GetTagsQuery, proplotListData: GetPropLotQuery}) {
   const { address } = useAccount();
 
-  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
+  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery<DelegatedVotesQuery>(
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
@@ -127,7 +133,7 @@ export default function CommunityHome({ tagsData, proplotListData }: { tagsData:
           What ideas are you looking for?
         </div>
         {tagsData && (tagsData?.tags || []).length > 0 && (
-          <TagButtons tags={tagsData.tags as getTags_tags[]} />
+          <TagButtons tags={tagsData.tags} />
         )}
         <div className="gap-lg flex flex-row flex-wrap items-center w-full overflow-x-scroll scrollbar-hide">
           {proplotListData?.propLot?.list?.map((listItem: any, idx: number) => {
