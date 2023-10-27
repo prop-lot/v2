@@ -1,0 +1,12 @@
+overwrite: true
+schema: "https://api.goldsky.com/api/public/project_cldf2o9pqagp43svvbk5u3kmo/subgraphs/nouns/prod/gn"
+documents: "./graphql/subgraph/**/*.ts"
+generates:
+  ./graphql/types/__generated__/subgraphTypes.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-resolvers"
+    config:
+      namingConvention:
+        enumValues: keep

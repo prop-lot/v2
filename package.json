@@ -10,8 +10,9 @@
     "build": "prisma migrate deploy && next build",
     "start": "next start -p 8080",
     "lint": "next lint",
-    "generate-server-graph": "graphql-codegen --config codegen.yml",
-    "generate-client-graph": "npx apollo codegen:generate --localSchemaFile=./graphql/schemas/schema.graphql ./graphql/types/__generated__/ --outputFlat --globalTypesFile=./graphql/types/__generated__/globalTypes.ts --includes=./graphql/queries/**/*.ts --target=typescript --tagName=gql"
+    "generate-local-graph": "graphql-codegen --config codegen-local.yml",
+    "generate-subgraph": "graphql-codegen --config codegen-subgraph.yml",
+    "generate-graph": "npm run generate-local-graph && npm run generate-subgraph"
   },
   "dependencies": {
     "@apollo/client": "^3.7.4",
@@ -71,7 +72,9 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.16.4",
+    "@graphql-codegen/near-operation-file-preset": "^3.0.0",
     "@graphql-codegen/typescript": "2.8.7",
+    "@graphql-codegen/typescript-operations": "^4.0.1",
     "@graphql-codegen/typescript-resolvers": "^2.7.12",
     "@tailwindcss/typography": "^0.5.9",
     "@types/chance": "^1.1.3",
