@@ -11,20 +11,20 @@ import { useEnsName, useAccount } from "wagmi";
 
 import { GET_PROPLOT_PROFILE_QUERY } from "@/graphql/queries/propLotProfileQuery";
 import { TOKEN_BALANCES_BY_OWNER_SUB } from "@/graphql/subgraph";
-import {
-  getPropLotProfile,
-  getPropLotProfile_propLotProfile_profile_user_userStats as UserStats,
-} from "@/graphql/types/__generated__/getPropLotProfile";
 
 import ProfileTabFilters from "@/components/ProfileTabFilters";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
-import ProfileCommentRow from "@/components/ProfileCommentRow";
 import { StandaloneNounCircular } from "@/components/NounCircular";
 
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import useSyncURLParams from "@/hooks/useSyncURLParams";
+import { TokenBalancesQuery } from "@/graphql/types/__generated__/subgraphTypes";
+import {
+  GetPropLotProfileQuery,
+  UserStats
+} from "@/graphql/types/__generated__/types";
 
 // import Davatar from '@davatar/react';
 // import ProfileGovernanceList from '@/components/ProfileGovernanceList';
@@ -153,7 +153,7 @@ const PropLotUserProfile = ({
   // } = useProfileGovernanceData();
 
   const [getPropLotProfileQuery, { data, refetch }] =
-    useLazyQuery<getPropLotProfile>(GET_PROPLOT_PROFILE_QUERY, {
+    useLazyQuery<GetPropLotProfileQuery>(GET_PROPLOT_PROFILE_QUERY, {
       context: {
         clientName: "PropLot",
         headers: {
@@ -162,7 +162,7 @@ const PropLotUserProfile = ({
       },
     });
 
-  const [getTokenBalances, { data: tokenBalanceData }] = useLazyQuery(
+  const [getTokenBalances, { data: tokenBalanceData }] = useLazyQuery<TokenBalancesQuery>(
     TOKEN_BALANCES_BY_OWNER_SUB,
     {
       context: {
@@ -420,29 +420,6 @@ const PropLotUserProfile = ({
                             },
                           })
                         }
-                      />
-                    </div>
-                  );
-                }
-
-                if (listItem.__typename === "Comment") {
-                  return (
-                    <div
-                      key={`comment-${listItem.id}`}
-                      className="mb-[16px] space-y-4"
-                    >
-                      <ProfileCommentRow
-                        comment={listItem}
-                        refetch={() =>
-                          refetch({
-                            options: {
-                              wallet: id,
-                              requestUUID: v4(),
-                              filters: appliedFilters,
-                            },
-                          })
-                        }
-                        communityName={community?.uname as SUPPORTED_SUBDOMAINS}
                       />
                     </div>
                   );

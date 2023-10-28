@@ -6,7 +6,6 @@ import {
   GET_CURRENT_AUCTION,
   GET_PREVIOUS_AUCTIONS,
   GET_RECENT_PROPOSALS,
-  TOTAL_NOUNS_CREATED,
   GET_GOVERNANCE_DATA,
   GET_CANDIDATE_DATA,
   GET_CANDIDATE_VOTES,
@@ -38,7 +37,7 @@ export const SupportedTokenGetterMap = {
     getTotalSupply: async () => {
       try {
         const data: any = await nounsGraphqlClient
-          .query(TOTAL_NOUNS_CREATED, {})
+          .query(GET_GOVERNANCE_DATA, {})
           .toPromise();
         return parseInt(data?.data?.governance?.delegatedVotes) || undefined;
       } catch (e) {

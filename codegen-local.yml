@@ -1,0 +1,13 @@
+overwrite: true
+schema: 
+  - "./graphql/schemas/schema.graphql"
+documents: "./graphql/queries/**/*.ts"
+generates:
+  ./graphql/types/__generated__/types.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-resolvers"
+    config:
+      namingConvention:
+        enumValues: keep

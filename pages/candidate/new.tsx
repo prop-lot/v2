@@ -4,30 +4,30 @@ import {
   useContractRead,
   useWaitForTransaction,
 } from "wagmi";
-import { abi as NounsDAODataABI } from "../../lib/nouns/abis/NounsDAOData";
-import { abi as payerABI } from "../../lib/nouns/abis/Payer";
-import { abi as StreamFactoryABI } from "../../lib/nouns/abis/StreamFactory";
-import { abi as WethABI } from "../../lib/nouns/abis/Weth";
+import { abi as NounsDAODataABI } from "@/lib/nouns/abis/NounsDAOData";
+import { abi as payerABI } from "@/lib/nouns/abis/Payer";
+import { abi as StreamFactoryABI } from "@/lib/nouns/abis/StreamFactory";
+import { abi as WethABI } from "@/lib/nouns/abis/Weth";
 import { useForm } from "react-hook-form";
-import { contracts } from "../../lib/nouns/contracts";
+import { contracts } from "@/lib/nouns/contracts";
 import { useRouter } from "next/router";
 import { SUBMIT_CANDIDATE_MUTATION } from "@/graphql/queries/propLotMutations";
 import { useMutation } from "@apollo/client";
 import { decodeEventLog } from "viem";
 import { utils } from "ethers";
-import FunctionCallProposalForm from "../../components/candidate/FunctionCallProposalForm";
-import StreamFundsProposalForm from "../../components/candidate/StreamFundsProposalForm";
-import TransferFundsProposalForm from "../../components/candidate/TransferFundsProposalForm";
+import FunctionCallProposalForm from "@/components/candidate/FunctionCallProposalForm";
+import StreamFundsProposalForm from "@/components/candidate/StreamFundsProposalForm";
+import TransferFundsProposalForm from "@/components/candidate/TransferFundsProposalForm";
 import { encodeFunctionData } from "viem";
-import { publicClient } from "../../lib/viem/";
-import { formatTokenAmount } from "../../utils/formatTokenAmount";
-import { getTokenAddressForCurrency } from "../../utils/getTokenAddressForCurrency";
-import { SupportedCurrency } from "../../lib/types";
-import config from "../../lib/config";
+import { publicClient } from "@/lib/viem/";
+import { formatTokenAmount } from "@/utils/formatTokenAmount";
+import { getTokenAddressForCurrency } from "@/utils/getTokenAddressForCurrency";
+import { SupportedCurrency } from "@/lib/types";
+import config from "@/lib/config";
 import { GetServerSidePropsContext } from "next";
 import { ApolloQueryResult } from "@apollo/client";
 import { GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
-import { getIdea } from "@/graphql/types/__generated__/getIdea";
+import { GetIdeaQuery, Idea } from "@/graphql/types/__generated__/types";
 import { client } from "@/lib/apollo";
 import Link from "next/link";
 
@@ -232,7 +232,7 @@ const ProposalForm = ({
   }
 };
 
-const CandidatePage = ({ idea }: { idea: any }) => {
+const CandidatePage = ({ idea }: { idea: Idea }) => {
   const router = useRouter();
   const { ideaId } = router.query;
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -457,7 +457,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         ? `http://localhost:3000/api/graphql`
         : `${protocol}://${host}/api/graphql`;
 
-    const ideaData: ApolloQueryResult<getIdea> = await client.query({
+    const ideaData: ApolloQueryResult<GetIdeaQuery> = await client.query({
       query: GET_IDEA_QUERY,
       variables: { ideaId: context.query.ideaId },
       fetchPolicy: "no-cache",
@@ -471,6 +471,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         },
       },
     });
+
+    if (!ideaData.data.getIdea) {
+      throw new Error(`Couldn't find idea ${context.query.ideaId}`)
+    }
 
     return {
       props: {

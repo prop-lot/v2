@@ -5,16 +5,10 @@ import {
 } from "@/utils/queryFilterHelpers";
 
 import {
-  getPropLot_propLot_tagFilter as TagFilter,
-  getPropLot_propLot_tagFilter_options as TagFilterOptions,
-  getPropLot_propLot_sortFilter as SortFilter,
-  getPropLot_propLot_sortFilter_options as SortFilterOptions,
-  getPropLot_propLot_dateFilter as DateFilter,
-  getPropLot_propLot_dateFilter_options as DateFilterOptions,
-  getPropLot_propLot_listFilter as ListFilter,
-  getPropLot_propLot_listFilter_options as ListFilterOptions,
-} from "@/graphql/types/__generated__/getPropLot";
-import { FilterType } from "@/graphql/types/__generated__/globalTypes";
+  PropLotFilter,
+  FilterOption,
+  FilterType
+} from "@/graphql/types/__generated__/types";
 
 export type GenericFilter = {
   id: string;
@@ -31,13 +25,6 @@ export type GenericFilter = {
     __typename: "FilterOption";
   }[];
 };
-
-type Filter = TagFilter | SortFilter | DateFilter | ListFilter;
-type FilterOptions =
-  | TagFilterOptions
-  | SortFilterOptions
-  | DateFilterOptions
-  | ListFilterOptions;
 
 export const ButtonWrapper = ({ children }: { children: ReactNode }) => {
   return (
@@ -75,7 +62,7 @@ const ButtonFilters = ({
   filter,
   updateFilters,
 }: {
-  filter: Filter;
+  filter: PropLotFilter;
   updateFilters: (filters: string[], filterId: string) => void;
 }) => {
   const [selectedFilters, setSelectedFilters] = useState(
@@ -86,7 +73,7 @@ const ButtonFilters = ({
     setSelectedFilters(buildSelectedFilters(filter));
   }, [filter]);
 
-  const handleUpdateFilters = (opt: FilterOptions, isSelected: boolean) => {
+  const handleUpdateFilters = (opt: FilterOption, isSelected: boolean) => {
     const newFilters = updateSelectedFilters(
       filter,
       selectedFilters,

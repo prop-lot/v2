@@ -1,7 +1,7 @@
 import { IResolvers } from "@graphql-tools/utils";
 import prisma from "@/lib/prisma";
-import IdeasService from "../../services/ideas";
-import CandidateService from "../../services/candidates";
+import IdeasService from "@/services/ideas";
+import CandidateService from "@/services/candidates";
 import {
   PropLotResponseMetadataResolvers,
   QueryGetPropLotArgs,
@@ -12,7 +12,7 @@ import {
   AppliedFilter,
   PropLotListItems,
   PropLotListItemsResolvers,
-} from "@/graphql/types/__generated__/apiTypes";
+} from "@/graphql/types/__generated__/types";
 
 import {
   SORT_FILTERS,
@@ -223,9 +223,6 @@ const resolvers: IResolvers = {
           await CandidateService.getAllCandidates();
 
         listItems = [...candidates];
-
-        // QUERY FOR PROPOSALS HERE ONCE IMPLEMENTED IN THE DB.
-        // This param will be passed in when a user taps the "Proposals" button on the PropLotList screen.
       }
 
       return listItems;

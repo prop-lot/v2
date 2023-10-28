@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const DELEGATED_VOTES_BY_OWNER_SUB = gql`
-  query delegate($id: String!) {
+  query delegatedVotes($id: ID!) {
     delegate(id: $id) {
       delegatedVotes
     }
@@ -9,7 +9,7 @@ export const DELEGATED_VOTES_BY_OWNER_SUB = gql`
 `;
 
 export const DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK = gql`
-  query delegate($id: String!, $block: Block_height) {
+  query delegateVotesAtBlock($id: ID!, $block: Block_height) {
     delegate(id: $id, block: $block) {
       delegatedVotes
     }
@@ -17,7 +17,7 @@ export const DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK = gql`
 `;
 
 export const TOKEN_BALANCES_BY_OWNER_SUB = gql`
-  query tokenBalances($id: String!) {
+  query tokenBalances($id: ID!) {
     delegate(id: $id) {
       delegatedVotes
     }
@@ -38,19 +38,9 @@ export const TOKEN_BALANCES_BY_OWNER_SUB = gql`
   }
 `;
 
-// delegatedVotes is equal to the number of votes available to participate in voting.
-// this count will exclude burnt tokens.
-export const TOTAL_NOUNS_CREATED = gql`
-  {
-    governance(id: "GOVERNANCE") {
-      delegatedVotes
-    }
-  }
-`;
-
 export const GET_CURRENT_AUCTION = gql`
-  {
-    auctions(where: { settled_not: true }) {
+query getCurrentAuction {
+  auctions(where: { settled_not: true }) {
       id
       noun {
         id
@@ -93,7 +83,7 @@ export const GET_PREVIOUS_AUCTIONS = gql`
 `;
 
 export const GET_RECENT_PROPOSALS = gql`
-  query getRecentProposals($recentTimestamp: Int!) {
+  query getRecentProposals($recentTimestamp: BigInt) {
     proposals(
       where: { createdTimestamp_gt: $recentTimestamp }
       orderBy: id
@@ -107,8 +97,8 @@ export const GET_RECENT_PROPOSALS = gql`
 `;
 
 export const GET_GOVERNANCE_DATA = gql`
-  {
-    governance(id: "GOVERNANCE") {
+query getGovernanceData {
+  governance(id: "GOVERNANCE") {
       currentTokenHolders
       delegatedVotes
     }

@@ -3,10 +3,9 @@ import { useAccount, useEnsName } from "wagmi";
 import { createBreakpoint } from "react-use";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import IdeaVoteControls from "./IdeaVoteControls";
-import { getPropLot_propLot_list_Idea as Idea } from "@/graphql/types/__generated__/getPropLot";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import { DELETE_IDEA__MUTATION } from "@/graphql/queries/propLotMutations";
-import { deleteIdea } from "@/graphql/types/__generated__/deleteIdea";
+import { DeleteIdeaMutation, Idea } from "@/graphql/types/__generated__/types";
 import { useMutation } from "@apollo/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useApiError } from "@/hooks/useApiError";
@@ -81,7 +80,7 @@ const IdeaRow = ({
   )?.voterWeight;
 
   const [deleteIdeaMutation, { error, loading: isDeleting }] =
-    useMutation<deleteIdea>(DELETE_IDEA__MUTATION, {
+    useMutation<DeleteIdeaMutation>(DELETE_IDEA__MUTATION, {
       onCompleted: () => {
         refetch();
       },

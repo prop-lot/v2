@@ -224,7 +224,6 @@ type Candidate {
   idea: Idea
   proposerId: String!
   createdAt: Date!
-  deleted: Boolean!
 }
 
 # Enums

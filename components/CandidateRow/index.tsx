@@ -1,27 +1,19 @@
+import React, { useEffect, useRef } from "react";
+
 import { useRouter } from "next/router";
 import { useEnsName } from "wagmi";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
-import { useEffect, useRef } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ALL_CANDIDATE_DATA } from "@/graphql/subgraph";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import useIntersectionObserver from "@/hooks/useIntersectionObserver";
-
-interface CandidateRowProps {
-  slug: string;
-  proposer: string;
-  latestVersion: {
-    content: {
-      title: string;
-    };
-  };
-}
+import { GetAllCandidateDataQuery } from "@/graphql/types/__generated__/subgraphTypes";
 
 export const CandidateRowContainer = ({ slug }: { slug: string }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const entry = useIntersectionObserver(ref, {});
   const isVisible = !!entry?.isIntersecting;
-  const [getAllCandidateData, { data: canadidatesData }] = useLazyQuery(
+  const [getAllCandidateData, { data: canadidatesData }] = useLazyQuery<GetAllCandidateDataQuery>(
     GET_ALL_CANDIDATE_DATA,
     {
       context: {
@@ -42,7 +34,7 @@ export const CandidateRowContainer = ({ slug }: { slug: string }) => {
 
   const canadidateData = canadidatesData?.proposalCandidates?.[0];
 
-  if (!canadidateData || canadidateData?.length === 0) {
+  if (!canadidateData) {
     return (
       <div
         ref={ref}
@@ -54,7 +46,7 @@ export const CandidateRowContainer = ({ slug }: { slug: string }) => {
   return <CandidateRow ref={ref} {...canadidateData} />;
 };
 
-const CandidateRow: React.FC<CandidateRowProps> = ({ slug, proposer, latestVersion }) => {
+const CandidateRow = React.forwardRef<HTMLDivElement, GetAllCandidateDataQuery['proposalCandidates'][0]>(({ slug, proposer, latestVersion }, ref) => {
   const router = useRouter();
 
   const { data: creatorEns } = useEnsName({
@@ -82,6 +74,7 @@ const CandidateRow: React.FC<CandidateRowProps> = ({ slug, proposer, latestVersi
 
   return (
     <div
+      ref={ref}
       className="flex flex-row w-full border border-grey rounded-[10px] cursor-pointer p-md bg-white gap-sm min-w-[800px]"
       onClick={() => {
         router.push(`/candidate/${slug}`);
@@ -126,6 +119,8 @@ const CandidateRow: React.FC<CandidateRowProps> = ({ slug, proposer, latestVersi
       </>
     </div>
   );
-};
+});
+
+CandidateRow.displayName = 'CandidateRow';
 
 export default CandidateRow;

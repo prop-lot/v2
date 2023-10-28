@@ -1,32 +1,39 @@
 import { useEffect, useState } from "react";
-import { Col, Row, Container } from "react-bootstrap";
+
+import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
+import Link from "next/link";
+
+import { Col, Row, Container } from "react-bootstrap";
+
 import { useAccount, useEnsName } from "wagmi";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import moment from "moment";
 import { marked } from "marked";
 import DOMPurify from "isomorphic-dompurify";
-import {
-  getIdea,
-  getIdea_getIdea,
-} from "@/graphql/types/__generated__/getIdea";
 import { useLazyQuery, ApolloQueryResult } from "@apollo/client";
 import { GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import IdeaVoteControls from "@/components/IdeaVoteControls";
 import CandidateRow from "@/components/CandidateRow";
-import Link from "next/link";
 import {
   DELEGATED_VOTES_BY_OWNER_SUB,
   GET_ALL_CANDIDATE_DATA,
 } from "@/graphql/subgraph";
-import { GetServerSidePropsContext } from "next";
 import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import { client } from "@/lib/apollo";
 import { getTimeToClose } from "@/graphql/utils/queryUtils";
-import { SupportedTokenGetterMap } from "../../utils/supportedTokenUtils";
+
+import {
+  GetIdeaQuery,
+  Idea,
+} from "@/graphql/types/__generated__/types";
+import {
+  DelegatedVotesQuery,
+  GetAllCandidateDataQuery
+} from "@/graphql/types/__generated__/subgraphTypes";
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -70,7 +77,7 @@ const ProfileLink = ({ id }: { id: string }) => {
   );
 };
 
-export const IdeaCard = ({ idea }: { idea: getIdea_getIdea }) => {
+export const IdeaCard = ({ idea }: { idea: Idea }) => {
   const { address } = useAccount();
   const router = useRouter();
   const { id } = router.query as { id: string };
@@ -154,7 +161,7 @@ export const VotingCard = ({
   idea,
   tokenBalance,
 }: {
-  idea: getIdea_getIdea;
+  idea: Idea;
   tokenBalance: number;
 }) => {
   const { address } = useAccount();
@@ -203,16 +210,20 @@ export const VotingCard = ({
 
 const IdeaPage = ({
   community,
-  data,
+  idea,
 }: {
   community: Community;
-  data: getIdea;
+  idea: GetIdeaQuery['getIdea'];
 }) => {
+  if (!idea) {
+    throw new Error("Idea is required");
+  }
+
   const router = useRouter();
   const { id } = router.query as { id: string };
   const { address } = useAccount();
 
-  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
+  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery<DelegatedVotesQuery>(
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
@@ -221,7 +232,7 @@ const IdeaPage = ({
     }
   );
 
-  const [getAllCandidateData, { data: canadidatesData }] = useLazyQuery(
+  const [getAllCandidateData, { data: canadidatesData }] = useLazyQuery<GetAllCandidateDataQuery>(
     GET_ALL_CANDIDATE_DATA,
     {
       context: {
@@ -241,7 +252,7 @@ const IdeaPage = ({
   }, [address, getDelegatedVotes]);
 
   useEffect(() => {
-    const slugs = data.getIdea?.candidates?.map((candidate) => candidate.slug);
+    const slugs = idea.candidates?.map((candidate) => candidate.slug);
 
     if (slugs?.length === 1) {
       getAllCandidateData({
@@ -252,16 +263,10 @@ const IdeaPage = ({
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // loading
-  // todo: skeleton loading for better experience
-  if (!data?.getIdea) {
-    return <></>;
-  }
-
   const tokenBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
   const hasTokens = tokenBalance > 0;
-  const creatorTokenWeight = data.getIdea.votes?.find(
-    (vote) => vote.voterId === data.getIdea?.creatorId
+  const creatorTokenWeight = idea.votes?.find(
+    (vote) => vote.voterId === idea.creatorId
   )?.voterWeight;
 
   return (
@@ -291,14 +296,14 @@ const IdeaPage = ({
               </Link>
             </Row>
 
-            {data.getIdea.headerImage && (
+            {idea.headerImage && (
               <div className="flex flex-row w-full h-[320px] justify-center items-center flex-shrink-0 rounded-lg border border-[#A9B9CC] aspect-w-16 overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className="object-cover w-full h-full rounded-lg"
                   alt="Header image"
-                  data-twic-src={`image:${data.getIdea.headerImage}`}
-                  src={`${process.env.NEXT_PUBLIC_TWIC_PICS_DOMAIN}/${data.getIdea.headerImage}?twic=v1/output=preview`}
+                  data-twic-src={`image:${idea.headerImage}`}
+                  src={`${process.env.NEXT_PUBLIC_TWIC_PICS_DOMAIN}/${idea.headerImage}?twic=v1/output=preview`}
                 />
               </div>
             )}
@@ -308,13 +313,13 @@ const IdeaPage = ({
                 <Row>
                   <div className="flex flex-col mb-md">
                     <div className="flex flex-row gap-sm flex-wrap text-sm text-dark-grey items-center">
-                      {data.getIdea.creatorId && (
-                        <ProfileLink id={data.getIdea.creatorId} />
+                      {idea.creatorId && (
+                        <ProfileLink id={idea.creatorId} />
                       )}
-                      {` | ${moment(data.getIdea.createdAt).format(
+                      {` | ${moment(idea.createdAt).format(
                         "MMM Do YYYY"
                       )}`}
-                      {data.getIdea?.tags?.map((tag) => {
+                      {idea.tags?.map((tag) => {
                         return (
                           <span
                             key={tag.type}
@@ -333,10 +338,10 @@ const IdeaPage = ({
                 <div className="flex flex-col gap-lg">
                   <div className="flex flex-col gap-md">
                     <h1 className="text-[36px] font-bold">
-                      {data.getIdea.title}
+                      {idea.title}
                     </h1>
                     <p className="font-semibold text-base">
-                      {data.getIdea.tldr}
+                      {idea.tldr}
                     </p>
                   </div>
 
@@ -346,7 +351,7 @@ const IdeaPage = ({
                       className="prose-base text-base text-slate"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(
-                          marked.parse(data.getIdea.description),
+                          marked.parse(idea.description),
                           {
                             ADD_ATTR: ["target"],
                           }
@@ -357,8 +362,8 @@ const IdeaPage = ({
                 </div>
               </Col>
               <Col lg={4} className="md:max-w-[350px] flex flex-col gap-lg">
-                <IdeaCard idea={data.getIdea} />
-                <VotingCard idea={data.getIdea} tokenBalance={tokenBalance} />
+                <IdeaCard idea={idea as Idea} />
+                <VotingCard idea={idea as Idea} tokenBalance={tokenBalance} />
               </Col>
             </Row>
           </Col>
@@ -417,7 +422,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         ? `http://localhost:3000/api/graphql`
         : `${protocol}://${host}/api/graphql`;
 
-    const ideaData: ApolloQueryResult<getIdea> = await client.query({
+    const ideaData: ApolloQueryResult<GetIdeaQuery> = await client.query({
       query: GET_IDEA_QUERY,
       variables: { ideaId: context.params.id },
       fetchPolicy: "no-cache",
@@ -432,10 +437,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
     });
 
+    if (!ideaData.data.getIdea) {
+      throw new Error(`Can't find idea ${context.params.id}`)
+    }
+
     return {
       props: {
         community: JSON.parse(JSON.stringify(community)),
-        data: ideaData.data,
+        idea: ideaData.data.getIdea,
       },
     };
   } catch (e) {

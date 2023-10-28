@@ -1,6 +1,6 @@
 import CandidateService from "@/services/candidates";
 import { IResolvers } from "@graphql-tools/utils";
-import { MutationSubmitCandidateArgs } from "@/graphql/types/__generated__/apiTypes";
+import { MutationSubmitCandidateArgs } from "@/graphql/types/__generated__/types";
 
 const resolvers: IResolvers = {
   Mutation: {

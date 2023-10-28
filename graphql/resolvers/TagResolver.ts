@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 
 import { IResolvers } from "@graphql-tools/utils";
-import { IdeaTags } from "@/graphql/types/__generated__/apiTypes";
+import { IdeaTags } from "@/graphql/types/__generated__/types";
 import { Tag } from "@prisma/client";
 
 

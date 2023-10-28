@@ -3,9 +3,8 @@ import { ApolloQueryResult } from "@apollo/client";
 import { client } from "@/lib/apollo";
 import { v4 } from "uuid";
 import { GetServerSidePropsContext } from "next";
-import { getPropLot } from "@/graphql/types/__generated__/getPropLot";
+import { GetPropLotQuery, GetTagsQuery } from "@/graphql/types/__generated__/types";
 import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
-import { getTags } from "@/graphql/types/__generated__/getTags";
 import { GET_TAGS } from "@/graphql/queries/tagsQuery";
 
 const Home = (props: any) => {
@@ -23,7 +22,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         ? `http://localhost:3000/api/graphql`
         : `${protocol}://${host}/api/graphql`;
 
-    const proplotQueryPromise: Promise<ApolloQueryResult<getPropLot>> =
+    const proplotQueryPromise: Promise<ApolloQueryResult<GetPropLotQuery>> =
       client.query({
         query: GET_PROPLOT_QUERY,
         variables: {
@@ -44,7 +43,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         },
       });
 
-    const tagQueryPromise: Promise<ApolloQueryResult<getTags>> = client.query({
+    const tagQueryPromise: Promise<ApolloQueryResult<GetTagsQuery>> = client.query({
       query: GET_TAGS,
       variables: {},
       fetchPolicy: "no-cache",
