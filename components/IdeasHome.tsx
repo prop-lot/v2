@@ -1,4 +1,6 @@
 import Router from "next/router";
+import Image from "next/image";
+import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 import { v4 } from "uuid";
 import { useAccount } from "wagmi";
@@ -7,6 +9,8 @@ import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
+import ButtonFilters from "@/components/ButtonFilters";
+import { CandidateRowContainer } from "@/components/CandidateRow";
 import useSyncURLParams from "@/hooks/useSyncURLParams";
 import EmptyState from "@/components/EmptyState";
 import { Community } from "@prisma/client";
@@ -14,11 +18,15 @@ import {
   SUPPORTED_SUBDOMAINS,
   SupportedTokenGetterMap,
 } from "@/utils/supportedTokenUtils";
-import { getPropLot } from "@/graphql/types/__generated__/getPropLot";
-import ButtonFilters from "./ButtonFilters";
-import Image from "next/image";
-import Link from "next/link";
 import { formatEthValue, getEtherBalance } from "@/utils/ethers";
+
+import {
+  GetPropLotQuery
+} from "@/graphql/types/__generated__/types";
+import {
+  DelegatedVotesQuery
+} from "@/graphql/types/__generated__/subgraphTypes";
+
 
 const CommunityDataCard = ({
   title,
@@ -47,7 +55,7 @@ export default function IdeasHome({
 }) {
   const { address } = useAccount();
 
-  const [getPropLotQuery, { data, refetch, error }] = useLazyQuery<getPropLot>(
+  const [getPropLotQuery, { data, refetch, error }] = useLazyQuery<GetPropLotQuery>(
     GET_PROPLOT_QUERY,
     {
       context: {
@@ -59,7 +67,7 @@ export default function IdeasHome({
     }
   );
 
-  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
+  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery<DelegatedVotesQuery>(
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
@@ -117,6 +125,7 @@ export default function IdeasHome({
       Keep previously applied filters, remove any that match the filterId value.
       Then add the selection of updatedFilters and remove the __typename property.
     */
+
     const selectedfilters: string[] = [
       ...appliedFilters.filter((f: string) => {
         return !f.includes(`${filterId}=`);
@@ -308,6 +317,11 @@ export default function IdeasHome({
                     handleRefresh();
                   }}
                 />
+              );
+            }
+            if (listItem.__typename === "Candidate") {
+              return (
+                <CandidateRowContainer key={listItem.slug} {...listItem} />
               );
             }
 

@@ -2,18 +2,14 @@ import { useEffect, useState, ReactNode, MouseEvent } from 'react';
 import { buildSelectedFilters, updateSelectedFilters } from '@/utils/queryFilterHelpers';
 
 import {
-  getPropLot_propLot_tagFilter as TagFilter,
-  getPropLot_propLot_tagFilter_options as TagFilterOptions,
-  getPropLot_propLot_sortFilter as SortFilter,
-  getPropLot_propLot_sortFilter_options as SortFilterOptions,
-  getPropLot_propLot_dateFilter as DateFilter,
-  getPropLot_propLot_dateFilter_options as DateFilterOptions,
-} from '@/graphql/types/__generated__/getPropLot';
-import { FilterType } from '@/graphql/types/__generated__/globalTypes';
+  PropLotFilter,
+  FilterOption,
+  FilterType as FilterTypeEnum
+} from "@/graphql/types/__generated__/types";
 
 export type GenericFilter = {
   id: string;
-  type: FilterType;
+  type: FilterTypeEnum;
   label: string | null;
   __typename: 'PropLotFilter';
   options: {
@@ -25,9 +21,6 @@ export type GenericFilter = {
     __typename: 'FilterOption';
   }[];
 };
-
-type Filter = TagFilter | SortFilter | DateFilter;
-type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
 
 export const TabWrapper = ({ children }: { children: ReactNode }) => {
   return (
@@ -67,7 +60,7 @@ const ProfileTabFilters = ({
   filter,
   updateFilters,
 }: {
-  filter: Filter;
+  filter: PropLotFilter;
   updateFilters: (filters: string[], filterId: string) => void;
 }) => {
   const [selectedFilters, setSelectedFilters] = useState(buildSelectedFilters(filter));
@@ -76,7 +69,7 @@ const ProfileTabFilters = ({
     setSelectedFilters(buildSelectedFilters(filter));
   }, [filter]);
 
-  const handleUpdateFilters = (opt: FilterOptions, isSelected: boolean) => {
+  const handleUpdateFilters = (opt: FilterOption, isSelected: boolean) => {
     const newFilters = updateSelectedFilters(filter, selectedFilters, opt, isSelected);
 
     setSelectedFilters(newFilters);

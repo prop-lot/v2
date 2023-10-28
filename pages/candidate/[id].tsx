@@ -3,13 +3,12 @@ import { GetServerSidePropsContext } from "next";
 import { useLazyQuery } from "@apollo/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
-import { useAccount, useEnsName } from "wagmi";
+import { useAccount } from "wagmi";
 
 import CandidateProposalProgress from "../../components/CandidateProposalProgress";
 import CandidateConsensusVote from "../../components/CandidateConsensusVote";
 import CandidateSponsors from "../../components/CandidateSponsors";
 import CandidateVoteGrid from "../../components/CandidateVoteGrid";
-import { GET_CANDIDATE_DATA } from "../../graphql/subgraph";
 import { SupportedTokenGetterMap } from "../../utils/supportedTokenUtils";
 
 // example URL http://localhost:3000/candidate/0x57a39aa135a688cf18ece526f1d3597a11e1b32a-candidate-to-proposal
@@ -21,10 +20,6 @@ const CandidateIndexPage = ({
   proposalCandidate: any;
   votes: any;
 }) => {
-  console.log(proposalCandidate);
-
-  const { address } = useAccount();
-
   const [_title, ...description] =
     proposalCandidate.latestVersion.content.description.split("\n\n");
 
@@ -51,15 +46,6 @@ const CandidateIndexPage = ({
       </div>
     ));
   };
-
-  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
-    DELEGATED_VOTES_BY_OWNER_SUB,
-    {
-      context: {
-        clientName: "nouns" as SUPPORTED_SUBDOMAINS,
-      },
-    }
-  );
 
   return (
     <>
@@ -114,12 +100,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { id } = context.query as { id: string };
 
   const supportedTokenConfig =
-  SupportedTokenGetterMap["nouns" as SUPPORTED_SUBDOMAINS];
+    SupportedTokenGetterMap["nouns" as SUPPORTED_SUBDOMAINS];
 
   try {
-    const proposalCandidate = await supportedTokenConfig.getCandidateData(id.toLowerCase());
+    const proposalCandidates = await supportedTokenConfig.getAllCandidateData([
+      id,
+    ]);
 
-    const votesResponse = await supportedTokenConfig.getCandidateVotes(proposalCandidate.id);
+    const proposalCandidate = proposalCandidates?.[0];
+
+    const votesResponse = await supportedTokenConfig.getCandidateVotes(
+      proposalCandidate.id
+    );
 
     const orderedVotes = votesResponse.reduce(
       (acc: any, vote: any) => {

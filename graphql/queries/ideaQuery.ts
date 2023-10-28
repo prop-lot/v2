@@ -10,6 +10,7 @@ export const GET_IDEA_QUERY = gql`
       description
       votecount
       createdAt
+      createdAtBlock
       deleted
       expiryDate
       expiryOption
@@ -32,6 +33,12 @@ export const GET_IDEA_QUERY = gql`
         voter {
           wallet
         }
+      }
+      candidates {
+        slug
+        proposerId
+        ideaId
+        id
       }
     }
   }

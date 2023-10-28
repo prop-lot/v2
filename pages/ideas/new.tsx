@@ -10,11 +10,6 @@ import { marked } from "marked";
 import DOMPurify from "dompurify";
 import { SUBMIT_IDEA_MUTATION } from "@/graphql/queries/propLotMutations";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
-import {
-  IdeaExpiryOption,
-  TagType,
-} from "@/graphql/types/__generated__/apiTypes";
-import { submitIdea } from "@/graphql/types/__generated__/submitIdea";
 import { useApiError } from "@/hooks/useApiError";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
@@ -22,6 +17,8 @@ import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import { GET_TAGS } from "@/graphql/queries/tagsQuery";
+import { SubmitIdeaMutation, IdeaExpiryOption, TagType, GetTagsQuery } from "@/graphql/types/__generated__/types";
+import { DelegatedVotesQuery } from "@/graphql/types/__generated__/subgraphTypes";
 
 enum FORM_VALIDATION {
   TITLE_MAX = 50,
@@ -119,13 +116,13 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
   const { setError, error: errorModalVisible } = useApiError();
   const { isLoggedIn, triggerSignIn } = useAuth();
 
-  const { data: tagsResponse } = useQuery(GET_TAGS, {
+  const { data: tagsResponse } = useQuery<GetTagsQuery>(GET_TAGS, {
     context: {
       clientName: "PropLot",
     },
   });
 
-  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
+  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery<DelegatedVotesQuery>(
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
@@ -145,7 +142,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
   }, [address, getDelegatedVotes]);
 
   const [submitIdeaMutation, { error, loading, data }] =
-    useMutation<submitIdea>(SUBMIT_IDEA_MUTATION, {
+    useMutation<SubmitIdeaMutation>(SUBMIT_IDEA_MUTATION, {
       context: {
         clientName: "PropLot",
       },

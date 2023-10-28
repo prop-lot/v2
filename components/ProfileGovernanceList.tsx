@@ -4,13 +4,13 @@ import Router from "next/router";
 // import { ProposalState } from '../../../wrappers/nounsDao';
 // import { bigNounsPropStatus } from '../../../components/Proposals';
 import { useState } from 'react';
-import { TabOption, TabWrapper } from '@/components/ProfileTabFilters';
+// import { TabOption, TabWrapper } from '@/components/ProfileTabFilters';
 // import ProposalStatus from '../../../components/ProposalStatus';
 // import { TabFilterOptions, TabFilterOptionValues } from '@/hooks/useProfileGovernanceData';
 
 import { createBreakpoint } from 'react-use';
-import UIFilter from '@/components/UIFilter';
-import { FilterType as FilterTypeEnum } from '@/graphql/types/__generated__/globalTypes';
+// import UIFilter from '@/components/UIFilter';
+import { FilterType as FilterTypeEnum } from '@/graphql/types/__generated__/types';
 
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
@@ -147,7 +147,7 @@ const ProfileGovernanceList = ({
     <>
       <div className="mt-[32px] mb-[24px] flex flex-col-reverse sm:flex-row">
         <div className="flex mb-[16px] sm:mt-0 mt-[16px] sm:mb-0">
-          <TabWrapper>
+          {/* <TabWrapper> */}
             {/* {TabFilterOptions.map(({ id, label }: { id: TabFilterOptionValues; label: string }) => {
               return (
                 <TabOption
@@ -168,7 +168,7 @@ const ProfileGovernanceList = ({
                 }`}</TabOption>
               );
             })} */}
-          </TabWrapper>
+          {/* </TabWrapper> */}
         </div>
         <div className="flex flex-1 justify-end">
           {/* <UIFilter

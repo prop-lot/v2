@@ -8,7 +8,11 @@ AWS.config.update({
 });
 
 class CandidateService {
-  static async createCandidate(data: { slug: string; ideaId: string; proposerId: string; }) {
+  static async createCandidate(data: {
+    slug: string;
+    ideaId: string;
+    proposerId: string;
+  }) {
     try {
       if (!data.slug || !data.ideaId) {
         throw new Error("Failed to save idea: missing slug or ideaId");
@@ -23,6 +27,16 @@ class CandidateService {
       });
 
       return { ...candidate };
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static async getAllCandidates() {
+    try {
+      const candidates = await prisma.candidate.findMany();
+
+      return candidates;
     } catch (e) {
       throw e;
     }

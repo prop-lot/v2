@@ -1,7 +1,5 @@
 import Image from "next/image";
 
-import { Community } from "@prisma/client";
-
 import Link from "next/link";
 import { formatEthValue } from "@/utils/ethers";
 import { StandaloneNounCircular } from "./NounCircular";
@@ -100,13 +98,13 @@ const CommunityHomeLiveDataBoard = () => {
         </div>
         <div className="grow basis-3/5 flex-1 self-stretch flex-col justify-start items-start gap-lg inline-flex">
           <div className="flex-wrap grow shrink self-stretch justify-start items-start gap-lg inline-flex">
-            <div className="min-w-[350px] max-h-[300px] flex-1 self-stretch p-md bg-white justify-center rounded-xl border border-slate flex-col justify-start items-start gap-lg inline-flex">
+            <div className="min-w-[350px] max-h-[450px] flex-1 self-stretch p-md bg-white justify-center rounded-xl border border-slate flex-col justify-start items-start gap-lg inline-flex">
               <div className="xl:max-w-[300px] self-stretch text-lg font-bold">
                 Ξ{formatEthValue(liveData?.balance || 0)} treasury to fund your
                 projects and ideas
               </div>
               <div className="flex-1 self-stretch p-md bg-[#FFC925] rounded-2xl border border-black justify-center items-center gap-lg inline-flex">
-                <div className="w-20 h-20 relative">
+                <div className="relative">
                   <Image
                     width="100"
                     height="100"
@@ -127,7 +125,7 @@ const CommunityHomeLiveDataBoard = () => {
                 </div>
               </div>
             </div>
-            <div className="min-w-[450px] max-h-[300px] flex-1 grow shrink self-stretch p-md bg-white rounded-xl border border-slate flex-col justify-start items-start gap-lg inline-flex">
+            <div className="min-w-[450px] max-h-[450px] flex-1 grow shrink self-stretch p-md bg-white rounded-xl border border-slate flex-col justify-start items-start gap-lg inline-flex">
               <div className="self-stretch text-lg font-bold">
                 Democratic onchain vote to release funds
               </div>
@@ -204,7 +202,7 @@ const CommunityHomeLiveDataBoard = () => {
                   height="100"
                   alt="noun image placeholder"
                   className="grow shrink basis-0 self-stretch"
-                  src="/noun-gif-placeholder-2.png"
+                  src="/nouns-gif-1.gif"
                 />
               </div>
               <div className="grow shrink basis-0 self-stretch rounded-2xl border border-black justify-center items-center flex">
@@ -213,7 +211,7 @@ const CommunityHomeLiveDataBoard = () => {
                   height="100"
                   alt="noun image placeholder"
                   className="grow shrink basis-0 self-stretch"
-                  src="/noun-gif-placeholder-1.png"
+                  src="/noun-gif-2.gif"
                 />
               </div>
             </div>

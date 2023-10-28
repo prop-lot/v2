@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import { PROPLOT_FILTER_FRAGMENT } from './propLotQuery'
 
 export const GET_PROPLOT_PROFILE_QUERY = gql`
   query getPropLotProfile($options: PropLotProfileInputOptions!) {
@@ -50,6 +51,7 @@ export const GET_PROPLOT_PROFILE_QUERY = gql`
           description
           votecount
           createdAt
+          createdAtBlock
           deleted
           expiryDate
           expiryOption
@@ -86,17 +88,5 @@ export const GET_PROPLOT_PROFILE_QUERY = gql`
       }
     }
   }
-
-  fragment filterProperties on PropLotFilter {
-    id
-    type
-    label
-    options {
-      id
-      label
-      selected
-      value
-      icon
-    }
-  }
+  ${PROPLOT_FILTER_FRAGMENT}
 `;

@@ -1,7 +1,7 @@
 import { providers, utils } from "ethers";
 
 export const provider = new providers.JsonRpcProvider(
-  process.env.JSON_RPC_CLIENT
+  process.env.NEXT_PUBLIC_JSON_RPC_CLIENT
 );
 export const getBlock = async () => {
   try {

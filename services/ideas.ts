@@ -163,6 +163,7 @@ class IdeasService {
         },
         include: {
           tags: true,
+          candidates: true,
           votes: {
             include: {
               voter: true,
@@ -218,6 +219,7 @@ class IdeasService {
         },
         include: {
           tags: true,
+          candidates: true,
           images: {
             take: 1,
           },
